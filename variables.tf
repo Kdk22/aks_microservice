@@ -10,10 +10,17 @@ variable "resource_name" {
     description = "This is resource group for state file storage"
     default = "state"
 }
-variable "resource_group_name" {
-    type = string
-    description = "This is resource group name"
-    default = "aks"
+variable "resource_groups" {
+    type = map(object({
+      location = string
+      name = string
+      tag = string
+    }))
+    default = {
+      "rg1" = {location = "westus2", name= "store-tfstatefile", tag="storestatefile"},
+        "rg2" = {location = "westus2", name= "aks-deployment", tag="aks-project2"},
+
+    }
 }
 variable "location" {
   description = "Location variable"
