@@ -1,2 +1,0 @@
-
-prefix = "AKS-micro"
