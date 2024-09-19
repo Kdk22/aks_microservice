@@ -30,7 +30,7 @@ resource "azurerm_storage_container" "blob_container" {
 }
 
 module "ServicePrincipal" {
-  source                 = "./modules/ServicePrincipal"
+  source                 = "./modules/sp"
   service_principal_name = var.service_principal_name
 
   depends_on = [

@@ -1,5 +1,5 @@
 
- terraform{
+terraform {
   backend "azurerm" {
     resource_group_name  = "store-tfstatefile"
     storage_account_name = "backupstatefile"
