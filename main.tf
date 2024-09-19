@@ -1,8 +1,4 @@
 
-provider "azurerm" {
-  features {}
-}
-
 
 resource "azurerm_resource_group" "rg" {
   for_each = var.resource_groups
@@ -31,6 +27,26 @@ resource "azurerm_storage_container" "blob_container" {
   name                  = var.blob_state_file
   storage_account_name  = azurerm_storage_account.storage_account.name
   container_access_type = "private"
+}
+
+module "ServicePrincipal" {
+  source                 = "./modules/ServicePrincipal"
+  service_principal_name = var.service_principal_name
+
+  depends_on = [
+    azurerm_resource_group.rg
+  ]
+}
+
+resource "azurerm_role_assignment" "rolespn" {
+
+  scope                = var.subscription_path
+  role_definition_name = "Contributor"
+  principal_id         = module.ServicePrincipal.service_principal_object_id
+
+  depends_on = [
+    module.ServicePrincipal
+  ]
 }
 
 

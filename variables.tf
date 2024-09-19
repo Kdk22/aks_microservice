@@ -22,3 +22,14 @@ variable "resource_groups" {
 
   }
 }
+
+variable "service_principal_name" {
+  type = string
+  description = "This is service principle name"
+  
+}
+variable "subscription_path" {
+    type = string
+    description = "The url of subscription which "
+  
+}
