@@ -33,3 +33,7 @@ variable "subscription_path" {
   description = "The url of subscription which "
 
 }
+
+variable "keyvault_name" {
+  type = string
+}
