@@ -4,3 +4,4 @@ keyvault_name          = "aks-project2"
 ado_org_service_url    = "https://dev.azure.com/utft0"
 project_name = "Aks-Terra"
 ado_pipeline_yaml_path_1 = "../../azure-pipelines.yaml"
+// C:\NCPL\Azure-Project-Ass\aks_microservice\azure-pipelines.yaml
