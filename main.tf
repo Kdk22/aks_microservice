@@ -64,6 +64,7 @@ module "keyvault" {
   ]
 }
 
+# storing service connection to key vault
 resource "azurerm_key_vault_secret" "example" {
   name         = module.ServicePrincipal.client_id
   value        = module.ServicePrincipal.client_secret
@@ -73,6 +74,47 @@ resource "azurerm_key_vault_secret" "example" {
     module.keyvault
   ]
 }
+
+# storing github pat to key vault
+resource "azurerm_key_vault_secret" "github_token" {
+  name         = "github-token"
+  value        = var.github_pat
+  key_vault_id = module.keyvault.keyvault_id
+
+  depends_on = [
+    module.keyvault
+  ]
+}
+
+
+data "azurerm_key_vault_secret" "git_pat" {
+  name         = "github-token"
+  key_vault_id = module.keyvault.keyvault_id
+
+  depends_on = [azurerm_key_vault_secret.github_token]
+}
+
+provider "azuredevops" {
+  org_service_url       = var.ado_org_service_url
+  personal_access_token = var.ado_token
+}
+
+module "devops" {
+  source                   = "./modules/ado"
+  project_name             = var.project_name
+  ado_github_id            = var.ado_github_id
+  ado_pipeline_yaml_path_1 = var.ado_pipeline_yaml_path_1
+  github_pat           = data.azurerm_key_vault_secret.git_pat.value
+
+  providers = {
+    azuredevops = azuredevops
+  }
+
+  depends_on = [
+    module.keyvault
+  ]
+}
+
 
 
 

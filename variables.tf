@@ -37,3 +37,37 @@ variable "subscription_path" {
 variable "keyvault_name" {
   type = string
 }
+
+variable "github_pat" {
+  type = string
+}
+
+# inside ado variables:
+variable "ado_github_id" {
+  type        = string
+  description = "This is already created github id"
+  default     = "Kdk22/aks_microservice"
+}
+
+variable "ado_pipeline_yaml_path_1" {
+  type        = string
+  description = "Path to the yaml for the first pipeline"
+  default     = "azure-pipelines.yaml"
+}
+
+variable "ado_org_service_url" {
+  type        = string
+  description = "Path to project url"
+
+}
+
+variable "project_name" {
+  type        = string
+  description = "Project Name"
+
+}
+variable "ado_token" {
+  type        = string
+  description = "Azure Devops Token"
+  
+}
