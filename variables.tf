@@ -52,7 +52,7 @@ variable "ado_github_id" {
 variable "ado_pipeline_yaml_path_1" {
   type        = string
   description = "Path to the yaml for the first pipeline"
-  default     = "azure-pipelines.yaml"
+
 }
 
 variable "ado_org_service_url" {
