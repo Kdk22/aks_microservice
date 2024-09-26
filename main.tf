@@ -114,3 +114,31 @@ module "devops" {
     module.keyvault
   ]
 }
+
+
+# create Azure Kubernetes Service
+module "aks" {
+  source                 = "./modules/aks/"
+  service_principal_name = var.service_principal_name
+  client_id              = module.ServicePrincipal.client_id
+  client_secret          = module.ServicePrincipal.client_secret
+ resource_group_name         = azurerm_resource_group.rg["rg2"].name
+  location                    = azurerm_resource_group.rg["rg2"].location
+
+  depends_on = [
+    module.ServicePrincipal
+  ]
+
+}
+
+resource "local_file" "kubeconfig" {
+  depends_on   = [module.aks]
+  filename     = "./kubeconfig"
+  content      = module.aks.config
+  
+}
+
+
+
+
+
