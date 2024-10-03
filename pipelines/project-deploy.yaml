@@ -1,0 +1,19 @@
+parameters:
+- name: repoName
+  type: string
+
+resources:
+  repositories:
+    - repository: repo
+      type: github
+      name: ${{ parameters.repoName }}
+      endpoint: github-service-connection
+
+jobs:
+- job: BuildJob
+  steps:
+  - checkout: repo
+  - script: |
+      echo "Building from ${{ parameters.repoName }}"
+      # Add build steps here
+    displayName: 'Build Job'

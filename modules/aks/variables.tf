@@ -1,7 +1,9 @@
 variable "location" {
-
+  type = string
 }
- variable "resource_group_name" {}
+ variable "resource_group_name" {
+  type = string
+ }
 
 variable "service_principal_name" {
   type = string
@@ -15,4 +17,10 @@ variable "client_id" {}
 variable "client_secret" {
   type = string
   sensitive = true
+}
+
+
+variable "rg_id" {
+  type = string
+  
 }

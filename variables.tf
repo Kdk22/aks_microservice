@@ -26,20 +26,24 @@ variable "resource_groups" {
 variable "service_principal_name" {
   type        = string
   description = "This is service principle name"
+    default    = "aks-project2-spn"
 
 }
 variable "subscription_path" {
   type        = string
   description = "The url of subscription which "
-
+  default     = "/subscriptions/75e2cef5-d3ca-42ff-8b0d-4dab256b9453"
 }
 
 variable "keyvault_name" {
   type = string
+  description = "Key Vault Name"
+  default     = "aks-project2"
 }
 
 variable "github_pat" {
   type = string
+  description = "The pat"
 }
 
 # inside ado variables:
@@ -52,22 +56,26 @@ variable "ado_github_id" {
 variable "ado_pipeline_yaml_path_1" {
   type        = string
   description = "Path to the yaml for the first pipeline"
+  default     = "azure-pipelines.yaml"
 
 }
 
 variable "ado_org_service_url" {
   type        = string
   description = "Path to project url"
+  default = "blank"
 
 }
 
 variable "project_name" {
   type        = string
   description = "Project Name"
+  default = "Aks-Terra"
 
 }
 variable "ado_token" {
   type        = string
   description = "Azure Devops Token"
+  default = "blank"
   
 }

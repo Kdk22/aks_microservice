@@ -8,6 +8,10 @@ terraform {
       source  = "microsoft/azuredevops"
       version = ">= 0.1.0"
     }
+     azapi = {
+      source  = "azure/azapi"
+      version = "~>2.0"
+    }
   }
 }
 

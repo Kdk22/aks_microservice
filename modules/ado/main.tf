@@ -66,7 +66,7 @@ resource "azuredevops_build_definition" "pipeline_1" {
     repo_type             = "GitHub"
     repo_id               = var.ado_github_id
     branch_name           = "main"
-    yml_path              = "azure-pipelines.yaml"
+    yml_path              = var.ado_pipeline_yaml_path_1
     service_connection_id = azuredevops_serviceendpoint_github.serviceendpoint_github.id
   }
   

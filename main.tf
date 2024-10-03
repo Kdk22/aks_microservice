@@ -124,6 +124,7 @@ module "aks" {
   client_secret          = module.ServicePrincipal.client_secret
  resource_group_name         = azurerm_resource_group.rg["rg2"].name
   location                    = azurerm_resource_group.rg["rg2"].location
+  rg_id = azurerm_resource_group.rg["rg2"].id
 
   depends_on = [
     module.ServicePrincipal
