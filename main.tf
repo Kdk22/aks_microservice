@@ -132,6 +132,30 @@ module "aks" {
 
 }
 
+module "vnet"{
+  source = "./modules/vnet"
+  AKS_VNET_NAME = var.AKS_VNET_NAME
+  LOCATION = azurerm_resource_group.rg["rg2"].location
+  RESOURCE_GROUP_NAME      = azurerm_resource_group.rg["rg2"].name
+  AKS_ADDRESS_SPACE = var.AKS_ADDRESS_SPACE
+  AKS_SUBNET_ADDRESS_PREFIX = var.AKS_SUBNET_ADDRESS_PREFIX
+  AKS_SUBNET_NAME = var.AKS_SUBNET_NAME
+  APPGW_SUBNET_NAME = var.APPGW_SUBNET_NAME
+  APPGW_SUBNET_ADDRESS_PREFIX = var.APPGW_SUBNET_ADDRESS_PREFIX
+  ACR_VNET_NAME = var.ACR_VNET_NAME
+  ACR_SUBNET_NAME = var.ACR_SUBNET_NAME
+  ACR_ADDRESS_SPACE = var.ACR_ADDRESS_SPACE
+  ACR_SUBNET_ADDRESS_PREFIX = var.ACR_SUBNET_ADDRESS_PREFIX
+  AGENT_VNET_NAME = var.AGENT_VNET_NAME
+  AGENT_ADDRESS_SPACE = var.AGENT_ADDRESS_SPACE
+  AGENT_SUBNET_NAME = var.AGENT_SUBNET_NAME
+  AGENT_SUBNET_ADDRESS_PREFIX = var.AGENT_SUBNET_ADDRESS_PREFIX
+}
+
+# module "aks"{
+#   source = "./modules/aks"
+# }
+
 resource "local_file" "kubeconfig" {
   depends_on   = [module.aks]
   filename     = "./kubeconfig"
