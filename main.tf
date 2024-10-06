@@ -152,6 +152,17 @@ module "vnet"{
   AGENT_SUBNET_ADDRESS_PREFIX = var.AGENT_SUBNET_ADDRESS_PREFIX
 }
 
+module "agent-vm"{
+  source = "./modules/agentvm"
+AGENT_VM_NAME = var.AGENT_VM_NAME
+ LOCATION = azurerm_resource_group.rg["rg2"].location
+ RESOURCE_GROUP_NAME  = azurerm_resource_group.rg["rg2"].name
+ ADMIN_USERNAME  = var.ADMIN_USERNAME
+ ADMIN_PASSWORD  = var.ADMIN_PASSWORD
+ VM_SIZE = var.VM_SIZE
+ AGENT_SUBNET_ID = module.vnet.agent_vnet_subnet_id
+}
+
 # module "aks"{
 #   source = "./modules/aks"
 # }

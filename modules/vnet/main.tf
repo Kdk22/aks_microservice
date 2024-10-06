@@ -12,6 +12,7 @@ resource "azurerm_subnet" "aks-subnet" {
   address_prefixes     = [var.AKS_SUBNET_ADDRESS_PREFIX]
 
   service_endpoints = ["Microsoft.Sql"]
+  depends_on = [ azurerm_virtual_network.aks-vnet ]
 }
 
 resource "azurerm_subnet" "appgw-subnet" {
@@ -19,6 +20,8 @@ resource "azurerm_subnet" "appgw-subnet" {
   resource_group_name  = var.RESOURCE_GROUP_NAME
   virtual_network_name = azurerm_virtual_network.aks-vnet.name
   address_prefixes     = [var.APPGW_SUBNET_ADDRESS_PREFIX]
+
+  depends_on = [ azurerm_virtual_network.aks-vnet ]
 }
 
 resource "azurerm_virtual_network" "acr-vnet" {
@@ -31,9 +34,11 @@ resource "azurerm_virtual_network" "acr-vnet" {
 
 resource "azurerm_subnet" "acr-subnet" {
   name                 = var.ACR_SUBNET_NAME
-  resource_group_name  = azurerm_resource_group.acr-vnet.name
+  resource_group_name  = var.RESOURCE_GROUP_NAME
   virtual_network_name = azurerm_virtual_network.acr-vnet.name
   address_prefixes     = [var.ACR_SUBNET_ADDRESS_PREFIX]
+  
+  depends_on = [ azurerm_virtual_network.acr-vnet ]
 }
 
 resource "azurerm_virtual_network" "agent-vnet" {
@@ -46,9 +51,11 @@ resource "azurerm_virtual_network" "agent-vnet" {
 
 resource "azurerm_subnet" "agent-vnet-subnet" {
   name                 = var.AGENT_SUBNET_NAME
-  resource_group_name  = azurerm_resource_group.acr-vnet.name
+  resource_group_name  = var.RESOURCE_GROUP_NAME
   virtual_network_name = azurerm_virtual_network.acr-vnet.name
   address_prefixes     = [var.AGENT_SUBNET_ADDRESS_PREFIX]
+  
+  depends_on = [ azurerm_virtual_network.acr-vnet ]
 }
 
 resource "azurerm_virtual_network_peering" "aks-acr" {
@@ -59,6 +66,10 @@ resource "azurerm_virtual_network_peering" "aks-acr" {
   allow_virtual_network_access = true
   allow_forwarded_traffic      = true
   allow_gateway_transit        = true
+
+  
+  
+  depends_on = [ azurerm_virtual_network.acr-vnet, azurerm_virtual_network.aks-vnet ]
 }
 
 resource "azurerm_virtual_network_peering" "acr-aks" {
@@ -69,6 +80,8 @@ resource "azurerm_virtual_network_peering" "acr-aks" {
   allow_virtual_network_access = true
   allow_forwarded_traffic      = true
   allow_gateway_transit        = true
+    
+  depends_on = [ azurerm_virtual_network.acr-vnet, azurerm_virtual_network.aks-vnet ]
 }
 
 resource "azurerm_virtual_network_peering" "acr-agent" {
@@ -79,6 +92,10 @@ resource "azurerm_virtual_network_peering" "acr-agent" {
   allow_virtual_network_access = true
   allow_forwarded_traffic      = true
   allow_gateway_transit        = true
+
+    
+  
+  depends_on = [ azurerm_virtual_network.acr-vnet, azurerm_virtual_network.agent-vnet ]
 }
 
 resource "azurerm_virtual_network_peering" "agent-acr" {
@@ -89,6 +106,8 @@ resource "azurerm_virtual_network_peering" "agent-acr" {
   allow_virtual_network_access = true
   allow_forwarded_traffic      = true
   allow_gateway_transit        = true
+    
+  depends_on = [ azurerm_virtual_network.acr-vnet, azurerm_virtual_network.agent-vnet ]
 }
 
 resource "azurerm_virtual_network_peering" "aks-agent" {
@@ -99,6 +118,8 @@ resource "azurerm_virtual_network_peering" "aks-agent" {
   allow_virtual_network_access = true
   allow_forwarded_traffic      = true
   allow_gateway_transit        = true
+    
+  depends_on = [ azurerm_virtual_network.aks-vnet, azurerm_virtual_network.agent-vnet ]
 }
 
 resource "azurerm_virtual_network_peering" "agent-aks" {
@@ -109,4 +130,6 @@ resource "azurerm_virtual_network_peering" "agent-aks" {
   allow_virtual_network_access = true
   allow_forwarded_traffic      = true
   allow_gateway_transit        = true
+    
+  depends_on = [ azurerm_virtual_network.aks-vnet, azurerm_virtual_network.agent-vnet ]
 }
