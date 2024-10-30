@@ -163,6 +163,19 @@ AGENT_VM_NAME = var.AGENT_VM_NAME
  AGENT_SUBNET_ID = module.vnet.agent_vnet_subnet_id
 }
 
+module "agent-vm"{
+  source = "./modules/acr"
+PRIVATE_ACR_NAME = "myprivateacr"
+LOCATION = azurerm_resource_group.rg["rg2"].location
+RESOURCE_GROUP_NAME  = azurerm_resource_group.rg["rg2"].name
+SERVICE_PRINCIPAL_OBJECT_ID = module.ServicePrincipal.service_principal_object_id
+ACR_SKU = var.VM_SIZE
+AKS_VNET_ID = module.vnet.aks_vnet_id
+AGENT_VNET_ID = module.vnet.agent_vnet_id
+ACR_VNET_ID = module.vnet.acr_vnet_id
+AGENT_SUBNET_ID = module.vnet.agent_vnet_subnet_id
+}
+
 # module "aks"{
 #   source = "./modules/aks"
 # }
