@@ -24,6 +24,16 @@ AGENT_SUBNET_ADDRESS_PREFIX = "13.0.0.0/16"
 AGENT_VM_NAME = "agent-vm"
 ADMIN_USERNAME = "aks-agent-vm"
 ADMIN_PASSWORD = "P@ssw0rd$20%4"
+
+#acr
+PRIVATE_ACR_NAME = "myprivateacr1"
 VM_SIZE = "Standard_D2s_v3"
 
+
+#db
+COLLATION = "SQL_Latin1_General_CP1_CI_AS"
+DB_NAME = "db1terra"
+DBPASSWORD = "password@123"
+DBSERVER_NAME = "db1terraserver"
+DBUSERNAME = "terra"
 

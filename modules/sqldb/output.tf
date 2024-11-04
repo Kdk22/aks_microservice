@@ -1,8 +1,11 @@
-output "sql_server_fqdn" {
-  value = azurerm_sql_server.main.fully_qualified_domain_name
+output "subnet_id" {
+  value = data.azurerm_subnet.aks-subnet.id
 }
 
-# Output the Database Name
-output "database_name" {
-  value = azurerm_sql_database.main.name
+output "subnet_name" {
+  value = data.azurerm_subnet.aks-subnet.name
+}
+
+output "subnet_address_prefixes" {
+  value = data.azurerm_subnet.aks-subnet.address_prefixes
 }

@@ -29,6 +29,11 @@ output "agent_vnet_subnet_id" {
   value = azurerm_subnet.agent-vnet-subnet.id
 }
 
+output "aks_subnet_service_endpoints"{
+  value = azurerm_subnet.aks-subnet.service_endpoints
+}
+
+
 # vnet peering output
 output "aks_acr_peering_id" {
   value = azurerm_virtual_network_peering.aks-acr.id
@@ -53,3 +58,5 @@ output "aks_agent_peering_id" {
 output "agent_aks_peering_id" {
   value = azurerm_virtual_network_peering.agent-aks.id
 }
+
+

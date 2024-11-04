@@ -1,27 +1,9 @@
-
-variable "sql_server_name" {
-  description = "The name of the SQL Server."
-  type        = string
-}
-
-variable "sql_server_admin_login" {
-  description = "The admin login for the SQL Server."
-  type        = string
-}
-
-variable "sql_server_admin_password" {
-  description = "The admin password for the SQL Server."
-  type        = string
-  sensitive   = true
-}
-
-variable "database_name" {
-  description = "The name of the SQL Database."
-  type        = string
-}
-
-variable "service_objective" {
-  description = "The service objective for the SQL Database."
-  type        = string
-  default     = "S0"
-}
+variable "RESOURCE_GROUP_NAME" { type = string }
+variable "LOCATION" { type = string }
+variable "COLLATION" { type = string }
+variable "DB_NAME" { type = string }
+variable "DBPASSWORD" { type = string }
+variable "DBSERVER_NAME" { type = string }
+variable "DBUSERNAME" { type = string }
+variable "AKS_SUBNET_ID" { type = string }
+variable "AKS_SUBNET_SERVICE_ENDPOINT" {type = string}

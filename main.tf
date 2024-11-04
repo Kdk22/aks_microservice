@@ -163,9 +163,9 @@ AGENT_VM_NAME = var.AGENT_VM_NAME
  AGENT_SUBNET_ID = module.vnet.agent_vnet_subnet_id
 }
 
-module "agent-vm"{
+module "acr"{
   source = "./modules/acr"
-PRIVATE_ACR_NAME = "myprivateacr"
+PRIVATE_ACR_NAME = var.PRIVATE_ACR_NAME
 LOCATION = azurerm_resource_group.rg["rg2"].location
 RESOURCE_GROUP_NAME  = azurerm_resource_group.rg["rg2"].name
 SERVICE_PRINCIPAL_OBJECT_ID = module.ServicePrincipal.service_principal_object_id
@@ -174,6 +174,21 @@ AKS_VNET_ID = module.vnet.aks_vnet_id
 AGENT_VNET_ID = module.vnet.agent_vnet_id
 ACR_VNET_ID = module.vnet.acr_vnet_id
 AGENT_SUBNET_ID = module.vnet.agent_vnet_subnet_id
+
+}
+
+module "sqldb" {
+  source = "./modules/sqldb"
+  AKS_SUBNET_ID = module.vnet.aks_subnet_id
+  AKS_SUBNET_SERVICE_ENDPOINT = module.vnet.
+  LOCATION = azurerm_resource_group.rg["rg2"].location
+  RESOURCE_GROUP_NAME  = azurerm_resource_group.rg["rg2"].name
+  COLLATION = var.TF_VAR_COLLATION
+  DB_NAME = var.TF_VAR_DB_NAME
+DBPASSWORD = var.DBPASSWORD
+DBSERVER_NAME = var.DBSERVER_NAME
+DBUSERNAME = var.DBUSERNAME
+
 }
 
 # module "aks"{
