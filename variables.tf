@@ -121,3 +121,23 @@ variable "DB_NAME" { type = string }
 variable "DBPASSWORD" { type = string }
 variable "DBSERVER_NAME" { type = string }
 variable "DBUSERNAME" { type = string }
+
+# app gate way
+variable "APP_GATEWAY_NAME" {
+  type        = string
+  description = "Application name. Use only lowercase letters and numbers"
+
+}
+
+variable "VIRTUAL_NETWORK_NAME" {
+  type        = string
+  description = "Virtual network name. This service will create subnets in this network."
+}
+
+variable "APPGW_PUBLIC_IP_NAME" {
+  type        = string
+  description = "PUBLIC IP. This service will create subnets in this network."
+}
+variable "APPGW_SUBNET_ID" {
+  type = string
+}

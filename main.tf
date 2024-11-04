@@ -183,14 +183,25 @@ module "sqldb" {
   AKS_SUBNET_SERVICE_ENDPOINT = module.vnet.
   LOCATION = azurerm_resource_group.rg["rg2"].location
   RESOURCE_GROUP_NAME  = azurerm_resource_group.rg["rg2"].name
-  COLLATION = var.TF_VAR_COLLATION
-  DB_NAME = var.TF_VAR_DB_NAME
+  COLLATION = var.COLLATION
+  DB_NAME = var.DB_NAME
 DBPASSWORD = var.DBPASSWORD
 DBSERVER_NAME = var.DBSERVER_NAME
 DBUSERNAME = var.DBUSERNAME
 
 }
 
+module "appgate"{
+  source = "./modules/appgate"
+LOCATION = azurerm_resource_group.rg["rg2"].location
+RESOURCE_GROUP_NAME  = azurerm_resource_group.rg["rg2"].name
+  APP_GATEWAY_NAME = var.APP_GATEWAY_NAME
+  VIRTUAL_NETWORK_NAME = var.VIRTUAL_NETWORK_NAME
+  APPGW_PUBLIC_IP_NAME = var.APPGW_PUBLIC_IP_NAME
+  APPGW_SUBNET_ID = module.vnet.appgw_subnet_id
+
+
+}
 # module "aks"{
 #   source = "./modules/aks"
 # }

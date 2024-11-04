@@ -37,3 +37,8 @@ DBPASSWORD = "password@123"
 DBSERVER_NAME = "db1terraserver"
 DBUSERNAME = "terra"
 
+
+#appgateway
+  APP_GATEWAY_NAME = "ApplicationGateway1"
+  VIRTUAL_NETWORK_NAME = "aks-vnet"
+  APPGW_PUBLIC_IP_NAME = "appgwpublicip"
