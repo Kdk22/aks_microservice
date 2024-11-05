@@ -116,22 +116,6 @@ module "devops" {
 }
 
 
-# create Azure Kubernetes Service
-module "aks" {
-  source                 = "./modules/aks/"
-  service_principal_name = var.service_principal_name
-  client_id              = module.ServicePrincipal.client_id
-  client_secret          = module.ServicePrincipal.client_secret
- resource_group_name         = azurerm_resource_group.rg["rg2"].name
-  location                    = azurerm_resource_group.rg["rg2"].location
-  rg_id = azurerm_resource_group.rg["rg2"].id
-
-  depends_on = [
-    module.ServicePrincipal
-  ]
-
-}
-
 module "vnet"{
   source = "./modules/vnet"
   AKS_VNET_NAME = var.AKS_VNET_NAME
@@ -202,15 +186,52 @@ RESOURCE_GROUP_NAME  = azurerm_resource_group.rg["rg2"].name
 
 
 }
+
+module "log-analytics" {
+  source = "./modules/loga"
+  LOCATION = azurerm_resource_group.rg["rg2"].location
+RESOURCE_GROUP_NAME  = azurerm_resource_group.rg["rg2"].name
+}
+
+module "azure-fron-door" {
+  source = "./modules/afd"
+RESOURCE_GROUP_NAME  = azurerm_resource_group.rg["rg2"].name
+APPGWPUBLIC_IP_ADDRESS =  module.appgate.ip_address
+}
 # module "aks"{
 #   source = "./modules/aks"
 # }
 
-resource "local_file" "kubeconfig" {
-  depends_on   = [module.aks]
-  filename     = "./kubeconfig"
-  content      = module.aks.config
+# resource "local_file" "kubeconfig" {
+#   depends_on   = [module.aks]
+#   filename     = "./kubeconfig"
+#   content      = module.aks.config
   
+# }
+
+# create Azure Kubernetes Service
+module "aks" {
+  source                 = "./modules/aks/"
+  SERVICE_PRINCIPLE_OBJECT_ID = module.ServicePrincipal.service_principal_object_id
+  NAME = "AKS-CLUSTER"
+    LOCATION = azurerm_resource_group.rg["rg2"].location
+RESOURCE_GROUP_NAME  = azurerm_resource_group.rg["rg2"].name
+AKS_VNET_ID = module.vnet.aks_vnet_id
+ACR_VNET_ID = module.vnet.acr_vnet_id
+AGENT_VNET_ID = module.vnet.agent_vnet_id
+ACR_ID = module.acr.acr_id
+APPGATEWAY_ID = module.appgate.appgw_id
+APPGW_SUBNET_ID = module.vnet.appgw_subnet_id
+CLIENT_ID = module.ServicePrincipal.client_id
+CLIENT_SECRET = module.ServicePrincipal.client_secret
+DNS_PREFIX = var.DNS_PREFIX
+rg_id = azurerm_resource_group.rg["rg2"].id
+
+
+  depends_on = [
+    module.ServicePrincipal, module.acr, module.vnet, module.appgate
+  ]
+
 }
 
 

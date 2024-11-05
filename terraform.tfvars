@@ -42,3 +42,6 @@ DBUSERNAME = "terra"
   APP_GATEWAY_NAME = "ApplicationGateway1"
   VIRTUAL_NETWORK_NAME = "aks-vnet"
   APPGW_PUBLIC_IP_NAME = "appgwpublicip"
+
+  #acr
+  DNS_PREFIX = "aksdemo001"

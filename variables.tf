@@ -141,3 +141,7 @@ variable "APPGW_PUBLIC_IP_NAME" {
 variable "APPGW_SUBNET_ID" {
   type = string
 }
+variable "DNS_PREFIX" {
+  type = string
+  
+}
