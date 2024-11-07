@@ -20,6 +20,8 @@ variables:
    value: '$(System.DefaultWorkingDirectory)'
 
 
+
+
 steps:
 - task: AzureKeyVault@2
   inputs:
@@ -214,7 +216,7 @@ pool:
             inputs:
               provider: 'azurerm'
               command: 'plan'
-              commandOptions: '-input=false -var-file="config.tfvars"'
+              commandOptions: '-input=false -var-file="terraform.tfvars"'
               environmentServiceNameAzureRM: '$(62d14c44-8038-4a87-8dc3-5627aed7af95)'
               workingDirectory: '$(working_directory)'
   
@@ -223,7 +225,7 @@ pool:
             inputs:
               provider: 'azurerm'
               command: 'apply'
-              commandOptions: '-input=false -auto-approve -var-file="config.tfvars"'
+              commandOptions: '-input=false -auto-approve -var-file="terraform.tfvars"'
               environmentServiceNameAzureRM: '$(62d14c44-8038-4a87-8dc3-5627aed7af95)'
               workingDirectory: '$(working_directory)'
   

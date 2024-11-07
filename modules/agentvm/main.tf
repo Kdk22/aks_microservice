@@ -1,18 +1,4 @@
-# ### Retrive Resource group
-# data "azurerm_resource_group" "rg-exists" {
-#   name = "aks-deployment"
-# }
-# ### Retrive subnet info
-# data "azurerm_subnet" "agent-subnet" {
-#   name                 = "agent-subnet"
-#   virtual_network_name = "agent-vnet"
-#   resource_group_name  = data.azurerm_resource_group.rg-exists.name
-# }
-# ### Retrive Vnet info
-# data "azurerm_virtual_network" "agent-vnet" {
-#   name                = "agent-vnet"
-#   resource_group_name = data.azurerm_resource_group.rg-exists.name
-# }
+
 
 ##Create The public_ip
 resource "azurerm_public_ip" "public_ip" {
@@ -93,12 +79,6 @@ resource "azurerm_linux_virtual_machine" "main" {
     caching              = "ReadWrite"
   }
 }
-
-# data "azurerm_public_ip" "public_ip" {
-#   name                = azurerm_public_ip.public_ip.name
-#   resource_group_name = var.RESOURCE_GROUP_NAME
-#   depends_on          = [azurerm_linux_virtual_machine.main]
-# }
 
 
 ## Install Docker and Configure Self-Hosted Agent

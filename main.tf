@@ -78,7 +78,7 @@ resource "azurerm_key_vault_secret" "example" {
 # storing github pat to key vault
 resource "azurerm_key_vault_secret" "github_token" {
   name         = "github-token"
-  value        = var.github_pat
+  value        = var.github-token
   key_vault_id = module.keyvault.keyvault_id
 
   depends_on = [
@@ -153,18 +153,20 @@ PRIVATE_ACR_NAME = var.PRIVATE_ACR_NAME
 LOCATION = azurerm_resource_group.rg["rg2"].location
 RESOURCE_GROUP_NAME  = azurerm_resource_group.rg["rg2"].name
 SERVICE_PRINCIPAL_OBJECT_ID = module.ServicePrincipal.service_principal_object_id
-ACR_SKU = var.VM_SIZE
+ACR_SKU = var.ACR_SKU
 AKS_VNET_ID = module.vnet.aks_vnet_id
 AGENT_VNET_ID = module.vnet.agent_vnet_id
 ACR_VNET_ID = module.vnet.acr_vnet_id
 AGENT_SUBNET_ID = module.vnet.agent_vnet_subnet_id
+
+depends_on = [ module.agent-vm, module.ServicePrincipal, module.vnet ]
 
 }
 
 module "sqldb" {
   source = "./modules/sqldb"
   AKS_SUBNET_ID = module.vnet.aks_subnet_id
-  AKS_SUBNET_SERVICE_ENDPOINT = module.vnet.
+  AKS_SUBNET_SERVICE_ENDPOINT = module.vnet.aks_subnet_service_endpoints
   LOCATION = azurerm_resource_group.rg["rg2"].location
   RESOURCE_GROUP_NAME  = azurerm_resource_group.rg["rg2"].name
   COLLATION = var.COLLATION
@@ -213,7 +215,7 @@ APPGWPUBLIC_IP_ADDRESS =  module.appgate.ip_address
 module "aks" {
   source                 = "./modules/aks/"
   SERVICE_PRINCIPLE_OBJECT_ID = module.ServicePrincipal.service_principal_object_id
-  NAME = "AKS-CLUSTER"
+  NAME = var.ACR_NAME
     LOCATION = azurerm_resource_group.rg["rg2"].location
 RESOURCE_GROUP_NAME  = azurerm_resource_group.rg["rg2"].name
 AKS_VNET_ID = module.vnet.aks_vnet_id

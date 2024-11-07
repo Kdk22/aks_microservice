@@ -52,19 +52,24 @@ resource "azurerm_private_dns_zone_virtual_network_link" "aks-agent" {
   virtual_network_id    = var.AGENT_VNET_ID #data.azurerm_virtual_network.agent-vnet.id
 }
 
+### Identity
+resource "azurerm_user_assigned_identity" "aks-access" {
+  name                = "aks-access"
+  resource_group_name = var.RESOURCE_GROUP_NAME
+  location            = var.LOCATION
+}
 
 ### Identity role assignment
 resource "azurerm_role_assignment" "dns_contributor" {
   scope                = azurerm_private_dns_zone.aks.id
   role_definition_name = "Private DNS Zone Contributor"
-  principal_type       = "ServicePrincipal"
-  principal_id         = var.SERVICE_PRINCIPLE_OBJECT_ID
+  principal_id         = azurerm_user_assigned_identity.aks-access.principal_id
 }
 
 resource "azurerm_role_assignment" "network_contributor" {
   scope                = var.AKS_VNET_ID
   role_definition_name = "Network Contributor"
-  principal_id         =  var.SERVICE_PRINCIPLE_OBJECT_ID
+  principal_id         = azurerm_user_assigned_identity.aks-access.principal_id
 }
 
 resource "azurerm_role_assignment" "Aks-AcrPull" {
@@ -125,9 +130,9 @@ resource "azurerm_kubernetes_cluster" "akscluster" {
     }
   }
 
-service_principal  {
-    client_id = var.CLIENT_ID
-    client_secret = var.CLIENT_SECRET
+identity {
+    type         = "UserAssigned"
+    identity_ids = [azurerm_user_assigned_identity.aks-access.id]
   }
 
    ingress_application_gateway {
@@ -158,3 +163,26 @@ service_principal  {
   #       key_data = azapi_resource_action.ssh_public_key_gen.output.publicKey
   #   }
   # }
+
+  resource "azurerm_kubernetes_cluster_node_pool" "linux101" {
+  kubernetes_cluster_id  = azurerm_kubernetes_cluster.akscluster.id
+  name                   = var.user_linux_node_pool_name
+  mode                   = var.user_node_pool_mode
+  vm_size                = var.default_node_pool_vm_size
+  vnet_subnet_id         = data.azurerm_subnet.aks-subnet.id
+  zones                  = var.default_node_pool_availability_zones
+  auto_scaling_enabled    = var.default_node_pool_auto_scaling_enabled
+
+  #max_pods               = var.default_node_pool_max_pods
+  max_count    = "1"
+  min_count    = "1"
+  node_count   = var.default_node_pool_node_count
+  os_disk_type = var.default_node_pool_os_disk_type
+  node_labels = {
+    "nodepool-type" = var.user_node_pool_mode
+    "environment"   = var.environment
+    "nodepoolos"    = "linux"
+    "app"           = "user-apps"
+  }
+
+}

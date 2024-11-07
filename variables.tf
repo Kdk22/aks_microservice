@@ -41,7 +41,7 @@ variable "keyvault_name" {
   default     = "aks-project2"
 }
 
-variable "github_pat" {
+variable "github-token" {
   type = string
   description = "The pat"
 }
@@ -103,6 +103,7 @@ variable "AGENT_ADDRESS_SPACE" { type = string }
 
 #agent variables
 variable "AGENT_VM_NAME" { type = string }
+variable "VM_SIZE" { type = string }
 
 variable "RESOURCE_GROUP_NAME" { type = string }
 variable "ADMIN_USERNAME" { type = string }
@@ -110,7 +111,11 @@ variable "ADMIN_PASSWORD" { type = string }
 
 #acr
 variable "PRIVATE_ACR_NAME" { type = string }
-variable "VM_SIZE" { type = string }
+variable "ACR_SKU" { type = string }
+variable "ACR_NAME" {
+  type = string
+  
+}
 
 
 
