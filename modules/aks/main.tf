@@ -1,4 +1,13 @@
+terraform {
+  required_providers {
+    azapi = {
+      source  = "azure/azapi"
+    }
+  }
+}
+
 # Datasource to get Latest Azure AKS latest Version
+
 data "azurerm_kubernetes_service_versions" "current" {
   location = var.LOCATION
   include_preview = false  

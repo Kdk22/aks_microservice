@@ -104,7 +104,6 @@ variable "AGENT_ADDRESS_SPACE" { type = string }
 variable "AGENT_VM_NAME" { type = string }
 variable "VM_SIZE" { type = string }
 
-variable "RESOURCE_GROUP_NAME" { type = string }
 variable "ADMIN_USERNAME" { type = string }
 variable "ADMIN_PASSWORD" { type = string }
 
