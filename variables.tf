@@ -73,7 +73,7 @@ variable "project_name" {
   default = "Aks-Terra"
 
 }
-variable "ado_token" {
+variable "ado-token" {
   type        = string
   description = "Azure Devops Token"
   default = "blank"

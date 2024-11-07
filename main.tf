@@ -96,7 +96,7 @@ data "azurerm_key_vault_secret" "git_pat" {
 
 provider "azuredevops" {
   org_service_url       = var.ado_org_service_url
-  personal_access_token = var.ado_token
+  personal_access_token = var.ado-token
 }
 
 module "devops" {
