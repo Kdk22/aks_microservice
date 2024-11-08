@@ -21,7 +21,6 @@ variables:
 
 
 
-
 steps:
 - task: AzureKeyVault@2
   inputs:
