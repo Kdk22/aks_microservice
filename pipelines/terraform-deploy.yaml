@@ -136,7 +136,7 @@ pool:
             inputs:
               provider: 'azurerm'
               command: 'plan'
-              commandOptions: '-input=false -auto-approve -var-file="terraform.tfvars" -var="github-token=$(github-token)" -var="ado-token=$(ado-token)"-var="SSH_PUBLIC_KEY=$(ssh-pub-key)"'
+              commandOptions: '-input=false -auto-approve -var-file="terraform.tfvars" '
               environmentServiceNameAzureRM: $(serviceconnection)
               workingDirectory: '$(working_directory)'
   
@@ -220,7 +220,7 @@ pool:
             inputs:
               provider: 'azurerm'
               command: 'plan'
-              commandOptions: '-input=false -auto-approve -var-file="terraform.tfvars" -var="github-token =$(github-token)" -var="ado-token = $(ado-token)"-var="SSH_PUBLIC_KEY = $(ssh-pub-key)"'
+              commandOptions: '-input=false -auto-approve -var-file="terraform.tfvars" '
               environmentServiceNameAzureRM: $(serviceconnection)
               workingDirectory: '$(working_directory)'
   
@@ -229,7 +229,7 @@ pool:
             inputs:
               provider: 'azurerm'
               command: 'apply'
-              commandOptions: '-input=false -auto-approve -var-file="terraform.tfvars" -var="github-token =$(github-token)" -var="ado-token = $(ado-token)"-var="SSH_PUBLIC_KEY = $(ssh-pub-key)"'
+              commandOptions: '-input=false -auto-approve -var-file="terraform.tfvars" '
               environmentServiceNameAzureRM: $(serviceconnection)
               workingDirectory: '$(working_directory)'
   
