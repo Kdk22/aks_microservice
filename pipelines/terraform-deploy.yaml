@@ -1,6 +1,9 @@
 
 variables:
 
+- name: 'serviceconnection'
+   value: 'aks-project2-spn'
+
  - name: 'environment'
    value: 'dev'
 
@@ -21,10 +24,11 @@ variables:
 
 
 
+
 steps:
 - task: AzureKeyVault@2
   inputs:
-    azureSubscription: '62d14c44-8038-4a87-8dc3-5627aed7af95'
+    azureSubscription: 'aks-project2-spn'
     KeyVaultName: 'aks-project2'
     SecretsFilter: '*'
     RunAsPreJob: true
@@ -84,7 +88,7 @@ pool:
           inputs:
             provider: 'azurerm'
             command: 'init'
-            backendServiceArm: $(62d14c44-8038-4a87-8dc3-5627aed7af95)
+            backendServiceArm: $(serviceconnection)
             backendAzureRmResourceGroupName: '$(backend_rg)'
             backendAzureRmStorageAccountName: $(backend_storageaccount)
             backendAzureRmContainerName: $(backend_container)
@@ -120,7 +124,7 @@ pool:
             inputs:
               provider: 'azurerm'
               command: 'init'
-              backendServiceArm: $(62d14c44-8038-4a87-8dc3-5627aed7af95)
+              backendServiceArm: $(serviceconnection)
               backendAzureRmResourceGroupName: '$(backend_rg)'
               backendAzureRmStorageAccountName: $(backend_storageaccount)
               backendAzureRmContainerName: $(backend_container)
@@ -131,8 +135,8 @@ pool:
             inputs:
               provider: 'azurerm'
               command: 'plan'
-              commandOptions: '-var-file="config.tfvars" -out main.tfplan'
-              environmentServiceNameAzureRM: $(62d14c44-8038-4a87-8dc3-5627aed7af95)
+              commandOptions: '-input=false -auto-approve -var-file="terraform.tfvars" -var="github-token=$(github-token)" -var="ado-token=$(ado-token)"-var="SSH_PUBLIC_KEY=$(ssh-pub-key)"'
+              environmentServiceNameAzureRM: $(serviceconnection)
               workingDirectory: '$(working_directory)'
   
   #Checkov to scan the execution plan for vulnerabilities and exposed outputs
@@ -169,7 +173,7 @@ pool:
             timeoutInMinutes: 1440 # task times out in 1 day
             inputs:
               notifyUsers: |
-                rdadhichi@cultwines.com
+                khadkautshav7@gmail.com
               instructions: 'Please validate the build configuration and resume'
               onTimeout: 'reject'
         
@@ -198,7 +202,7 @@ pool:
             inputs:
               provider: 'azurerm'
               command: 'init'
-              backendServiceArm: $(62d14c44-8038-4a87-8dc3-5627aed7af95)
+              backendServiceArm: $(serviceconnection)
               backendAzureRmResourceGroupName: '$(backend_rg)'
               backendAzureRmStorageAccountName: $(backend_storageaccount)
               backendAzureRmContainerName: $(backend_container)
@@ -215,8 +219,8 @@ pool:
             inputs:
               provider: 'azurerm'
               command: 'plan'
-              commandOptions: '-input=false -var-file="terraform.tfvars"'
-              environmentServiceNameAzureRM: '$(62d14c44-8038-4a87-8dc3-5627aed7af95)'
+              commandOptions: '-input=false -auto-approve -var-file="terraform.tfvars" -var="github-token =$(github-token)" -var="ado-token = $(ado-token)"-var="SSH_PUBLIC_KEY = $(ssh-pub-key)"'
+              environmentServiceNameAzureRM: $(serviceconnection)
               workingDirectory: '$(working_directory)'
   
           - task: TerraformTaskV2@2
@@ -224,7 +228,7 @@ pool:
             inputs:
               provider: 'azurerm'
               command: 'apply'
-              commandOptions: '-input=false -auto-approve -var-file="terraform.tfvars"'
-              environmentServiceNameAzureRM: '$(62d14c44-8038-4a87-8dc3-5627aed7af95)'
+              commandOptions: '-input=false -auto-approve -var-file="terraform.tfvars" -var="github-token =$(github-token)" -var="ado-token = $(ado-token)"-var="SSH_PUBLIC_KEY = $(ssh-pub-key)"'
+              environmentServiceNameAzureRM: $(serviceconnection)
               workingDirectory: '$(working_directory)'
   

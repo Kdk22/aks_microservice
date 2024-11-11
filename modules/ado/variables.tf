@@ -28,3 +28,25 @@ variable "project_name" {
 #   description = "Url"
   
 # }
+variable "service_principal_id" {
+  type = string
+  
+}
+variable "service_principal_secret" {
+  type = string
+  
+}
+
+variable "spn_tenant_id" {
+  type = string
+  
+}
+variable "spn_subscription_id" {
+  type = string
+  
+}
+variable "subscription_name" {
+  type = string
+  default = "Azure subscription 1"
+  
+}

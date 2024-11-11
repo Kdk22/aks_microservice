@@ -81,6 +81,21 @@ resource "azuredevops_pipeline_authorization" "example" {
 }
 
 
+resource "azuredevops_serviceendpoint_azurerm" "example" {
+  project_id                             = azuredevops_project.project.id
+  service_endpoint_name                  = "AKS-TERRA-AzureRM"
+  description                            = "Managed by Terraform"
+  service_endpoint_authentication_scheme = "ServicePrincipal"
+  credentials {
+    serviceprincipalid  = var.service_principal_id
+    serviceprincipalkey = var.service_principal_secret
+  }
+  azurerm_spn_tenantid      = var.spn_tenant_id
+  azurerm_subscription_id   = var.spn_subscription_id
+  azurerm_subscription_name = var.subscription_name
+}
+
+
 
 
 
