@@ -3,15 +3,15 @@
 
 # vnet output
 output "aks_vnet_id" {
-  value = module.vnet.acr-vnet.id
+  value = azurerm_virtual_network.aks-vnet.id
 }
 
 output "acr_vnet_id" {
-  value = module.vnet.acr_vnet_id
+  value = azurerm_virtual_network.acr-vnet.id
 }
 
 output "agent_vnet_id" {
-  value = module.vnet.agent-vnet.id
+  value = azurerm_virtual_network.agent-vnet.id
 }
 
 # subnet output
@@ -32,6 +32,16 @@ output "agent_vnet_subnet_id" {
 output "aks_subnet_service_endpoints"{
   value = azurerm_subnet.aks-subnet.service_endpoints
 }
+
+output "aks_subnet_name" {
+  value = azurerm_subnet.aks-subnet.name
+}
+
+output "aks_subnet_address_prefixes" {
+  value = azurerm_subnet.aks-subnet.address_prefixes
+}
+
+
 
 
 # vnet peering output

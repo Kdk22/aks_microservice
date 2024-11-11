@@ -1,12 +1,4 @@
-data "azurerm_application_gateway" "appgateway" {
-  name                = "ApplicationGateway1"
-  resource_group_name = var.RESOURCE_GROUP_NAME
-}
 
-data "azurerm_public_ip" "appgwpublicip" {
-  name                = "appgwpublicip"
-  resource_group_name = var.RESOURCE_GROUP_NAME
-}
 
 resource "random_id" "front_door_endpoint_name" {
   byte_length = 2

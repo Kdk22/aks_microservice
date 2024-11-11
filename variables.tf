@@ -88,7 +88,6 @@ variable "APPGW_SUBNET_NAME" { type = string }
 variable "APPGW_SUBNET_ADDRESS_PREFIX" { type = string }
 
 
-variable "RESOURCE_GROUP_NAME" { type = string }
 
 variable "ACR_VNET_NAME" { type = string }
 variable "ACR_SUBNET_NAME" { type = string }
@@ -111,6 +110,10 @@ variable "ADMIN_PASSWORD" { type = string }
 variable "PRIVATE_ACR_NAME" { type = string }
 variable "ACR_SKU" { type = string }
 variable "ACR_NAME" {
+  type = string
+  
+}
+variable "SSH_PUBLIC_KEY" {
   type = string
   
 }
@@ -140,9 +143,6 @@ variable "VIRTUAL_NETWORK_NAME" {
 variable "APPGW_PUBLIC_IP_NAME" {
   type        = string
   description = "PUBLIC IP. This service will create subnets in this network."
-}
-variable "APPGW_SUBNET_ID" {
-  type = string
 }
 variable "DNS_PREFIX" {
   type = string

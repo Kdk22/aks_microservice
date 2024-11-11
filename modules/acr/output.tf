@@ -29,8 +29,3 @@ output "agent_vnet_link_id" {
   description = "The ID of the virtual network link for the Agent VNet"
   value       = azurerm_private_dns_zone_virtual_network_link.agent-vnet-link.id
 }
-
-output "acr_subnet_id" {
-  description = "The ID of the ACR subnet"
-  value       = data.azurerm_subnet.acr-subnet.id
-}

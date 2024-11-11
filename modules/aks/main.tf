@@ -1,8 +1,11 @@
 terraform {
   required_providers {
-    azapi = {
-      source  = "azure/azapi"
+    azuredevops = {
+      source = "microsoft/azuredevops"
     }
+     azapi = {
+      source  = "azure/azapi"
+     }
   }
 }
 
@@ -13,26 +16,26 @@ data "azurerm_kubernetes_service_versions" "current" {
   include_preview = false  
 }
  
- resource "random_pet" "ssh_key_name" {
-  prefix    = "ssh"
-  separator = ""
-}
+#  resource "random_pet" "ssh_key_name" {
+#   prefix    = "ssh"
+#   separator = ""
+# }
 
-resource "azapi_resource_action" "ssh_public_key_gen" {
-  type        = "Aks-project/sshPublicKeys@2024-09-26"
-  resource_id = azapi_resource.ssh_public_key.id
-  action      = "generateKeyPair"
-  method      = "POST"
+# resource "azapi_resource_action" "ssh_public_key_gen" {
+#   type        = "Aks-project/sshPublicKeys@2024-09-26"
+#   resource_id = azapi_resource.ssh_public_key.id
+#   action      = "generateKeyPair"
+#   method      = "POST"
 
-  response_export_values = ["publicKey", "privateKey"]
-}
+#   response_export_values = ["publicKey", "privateKey"]
+# }
 
-resource "azapi_resource" "ssh_public_key" {
-  type        = "Aks-project/sshPublicKeys@2024-09-26"
-  name      = random_pet.ssh_key_name.id
-  location              = var.LOCATION
-  parent_id = var.rg_id
-}
+# resource "azapi_resource" "ssh_public_key" {
+#   type        = "Aks-project/sshPublicKeys@2024-09-26"
+#   name      = random_pet.ssh_key_name.id
+#   location              = var.LOCATION
+#   parent_id = var.rg_id
+# }
 
 
 ### DNS zone
@@ -117,9 +120,10 @@ resource "azurerm_kubernetes_cluster" "akscluster" {
   default_node_pool {
     name                   = var.default_node_pool_name
     vm_size                = var.default_node_pool_vm_size
-    vnet_subnet_id         = data.azurerm_subnet.aks-subnet.id
+    vnet_subnet_id         = var.AKS_SUBNET_ID
     zones                  = var.default_node_pool_availability_zones
-    auto_scaling_enabled    = var.default_node_pool_auto_scaling_enabled
+
+    enable_auto_scaling = var.default_node_pool_auto_scaling_enabled
     max_pods               = var.default_node_pool_max_pods
     max_count              = var.default_node_pool_max_count
     min_count              = var.default_node_pool_min_count
@@ -135,7 +139,7 @@ resource "azurerm_kubernetes_cluster" "akscluster" {
   linux_profile {
     admin_username = var.admin_username
     ssh_key {
-      key_data = azapi_resource_action.ssh_public_key_gen.output.publicKey
+      key_data = var.ssh_public_key
     }
   }
 
@@ -178,9 +182,9 @@ identity {
   name                   = var.user_linux_node_pool_name
   mode                   = var.user_node_pool_mode
   vm_size                = var.default_node_pool_vm_size
-  vnet_subnet_id         = data.azurerm_subnet.aks-subnet.id
+  vnet_subnet_id         = var.AKS_SUBNET_ID 
   zones                  = var.default_node_pool_availability_zones
-  auto_scaling_enabled    = var.default_node_pool_auto_scaling_enabled
+  enable_auto_scaling =  var.default_node_pool_auto_scaling_enabled
 
   #max_pods               = var.default_node_pool_max_pods
   max_count    = "1"

@@ -20,7 +20,7 @@ resource "azurerm_network_interface" "main" {
     private_ip_address_allocation = "Dynamic"
     public_ip_address_id          = azurerm_public_ip.public_ip.id
   }
-  depends_on = [ azure_public_ip ]
+  depends_on = [ azurerm_public_ip.public_ip ]
 }
 ##Create The security_group
 resource "azurerm_network_security_group" "nsg" {
@@ -80,11 +80,10 @@ resource "azurerm_linux_virtual_machine" "main" {
   }
 }
 
-
 ## Install Docker and Configure Self-Hosted Agent
 resource "null_resource" "install_docker" {
   provisioner "remote-exec" {
-    inline = ["${file("../agent-vm/script.sh")}"]
+    inline = ["${file("modules/agentvm/script.sh")}"]
     //inline = ["${file("../script.sh")}"]
     //inline = [file("${path.module}/path/to/inline_script.sh")]
     connection {
@@ -95,6 +94,6 @@ resource "null_resource" "install_docker" {
       timeout  = "10m"
     }
   }
-  depends_on = [ azure_public_ip ]
+  depends_on = [ azurerm_public_ip.public_ip, azurerm_linux_virtual_machine.main ]
 
 }

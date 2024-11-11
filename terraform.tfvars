@@ -54,4 +54,3 @@ DBUSERNAME = "terra"
   ACR_NAME = "aksdemo"
   DNS_PREFIX = "aksdemo001"
   #SSH_PUBLIC_KEY = 
-  

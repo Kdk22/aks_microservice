@@ -43,7 +43,7 @@ resource "azurerm_private_endpoint" "acr_private_endpoint" {
   name                = "${var.PRIVATE_ACR_NAME}-private-endpoint"
   resource_group_name = var.RESOURCE_GROUP_NAME
   location            = var.LOCATION
-  subnet_id           = data.azurerm_subnet.acr-subnet.id
+  subnet_id           = var.ACR_SUBNET_ID 
   #tags                = var.tags
     private_dns_zone_group {
     name                 = "private-dns-zone-group"
@@ -103,5 +103,5 @@ resource "azurerm_private_dns_zone_virtual_network_link" "agent-vnet-link" {
 resource "azurerm_role_assignment" "Acrpush_role" {
   scope                = azurerm_container_registry.acr.id
   role_definition_name = "AcrPush"
-  principal_id         = data.azuread_service_principal.acr-access.object_id ##Object ID
+  principal_id         = var.SERVICE_PRINCIPAL_OBJECT_ID
 }

@@ -13,5 +13,6 @@ resource "azuread_service_principal" "main" {
 }
 
 resource "azuread_service_principal_password" "main" {
-  service_principal_id = azuread_service_principal.main.object_id
+  service_principal_id = "/servicePrincipals/${azuread_service_principal.main.object_id}"
+  depends_on = [ azuread_application.main ]
 }

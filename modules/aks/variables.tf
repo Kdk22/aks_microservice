@@ -203,3 +203,11 @@ variable "AGENT_VNET_ID" {
 variable "rg_id" {
   type = string
 }
+variable "AKS_SUBNET_ID" {
+  type = string
+}
+variable "ssh_public_key" {
+  type = string
+  default = "~/.ssh/id_rsa.pub"
+  
+}

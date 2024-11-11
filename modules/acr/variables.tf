@@ -17,3 +17,7 @@ variable "AKS_VNET_ID" {
 variable "SERVICE_PRINCIPAL_OBJECT_ID" {
   type = string
 }
+variable "ACR_SUBNET_ID" {
+  type = string
+  
+}
