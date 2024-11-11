@@ -1,26 +1,27 @@
-
+trigger:
+- main
 variables:
 
 - name: 'serviceconnection'
-   value: 'aks-project2-spn'
+  value: 'aks-project2-spn'
 
- - name: 'environment'
-   value: 'dev'
+- name: 'environment'
+  value: 'dev'
 
- - name: 'backend_rg'
-   value: 'store-tfstatefile'
+- name: 'backend_rg'
+  value: 'store-tfstatefile'
 
- - name: 'backend_storageaccount'
-   value: 'backupstatefile'
+- name: 'backend_storageaccount'
+  value: 'backupstatefile'
 
- - name: 'backend_container'
-   value: 'stateblob'
+- name: 'backend_container'
+  value: 'stateblob'
 
- - name: 'backendkey_tfstate'
-   value: 'terraform.tfstate'
+- name: 'backendkey_tfstate'
+  value: 'terraform.tfstate'
 
- - name: 'working_directory'
-   value: '$(System.DefaultWorkingDirectory)'
+- name: 'working_directory'
+  value: '$(System.DefaultWorkingDirectory)'
 
 
 
@@ -36,7 +37,7 @@ steps:
 
 - script: |
         echo "Using client secret"
-        echo "Client Token: $(githubToken)"
+        echo "Client Secret: $(githubToken)"
 
 
 pool:
@@ -136,7 +137,7 @@ pool:
             inputs:
               provider: 'azurerm'
               command: 'plan'
-              commandOptions: '-input=false -auto-approve -var-file="terraform.tfvars" '
+              commandOptions: '-input=false -auto-approve -var-file="terraform.tfvars" -var="github-token=$(github-token)" -var="ado-token=$(ado-token)"-var="SSH_PUBLIC_KEY=$(ssh-pub-key)"'
               environmentServiceNameAzureRM: $(serviceconnection)
               workingDirectory: '$(working_directory)'
   
@@ -220,7 +221,7 @@ pool:
             inputs:
               provider: 'azurerm'
               command: 'plan'
-              commandOptions: '-input=false -auto-approve -var-file="terraform.tfvars" '
+              commandOptions: '-input=false -auto-approve -var-file="terraform.tfvars" -var="github-token =$(github-token)" -var="ado-token = $(ado-token)"-var="SSH_PUBLIC_KEY = $(ssh-pub-key)"'
               environmentServiceNameAzureRM: $(serviceconnection)
               workingDirectory: '$(working_directory)'
   
@@ -229,7 +230,7 @@ pool:
             inputs:
               provider: 'azurerm'
               command: 'apply'
-              commandOptions: '-input=false -auto-approve -var-file="terraform.tfvars" '
+              commandOptions: '-input=false -auto-approve -var-file="terraform.tfvars" -var="github-token =$(github-token)" -var="ado-token = $(ado-token)"-var="SSH_PUBLIC_KEY = $(ssh-pub-key)"'
               environmentServiceNameAzureRM: $(serviceconnection)
               workingDirectory: '$(working_directory)'
   
