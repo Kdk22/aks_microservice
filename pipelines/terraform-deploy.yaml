@@ -34,9 +34,6 @@ steps:
     RunAsPreJob: true
   displayName: 'Azure Key Vault'
 
-  # Here my service connection is stored in key vault as 62d14c44-8038-4a87-8dc3-5627aed7af95: value
-  # So to get the secret value i have to use 62d14c44-8038-4a87-8dc3-5627aed7af95 because i used id.
-
 
 pool:
   vmImage: ubuntu-latest
@@ -118,7 +115,7 @@ pool:
           - task: TerraformInstaller@0
             displayName: 'install'
             inputs:
-             terraformVersion: 'latest'
+            terraformVersion: 'latest'
           - task: TerraformTaskV2@2
             displayName: init
             inputs:
@@ -186,10 +183,10 @@ pool:
           - waitForValidation
           condition: |
             and
-             (
-               eq(dependencies.plan.result, 'Succeeded'),
-               eq(dependencies.waitForValidation.result, 'Succeeded')
-             )
+            (
+              eq(dependencies.plan.result, 'Succeeded'),
+              eq(dependencies.waitForValidation.result, 'Succeeded')
+            )
           timeoutInMinutes: 0
           steps:
           - checkout: self
