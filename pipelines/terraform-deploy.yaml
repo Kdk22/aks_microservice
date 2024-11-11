@@ -30,7 +30,7 @@ steps:
   inputs:
     azureSubscription: 'aks-project2-spn'
     KeyVaultName: 'aks-project2'
-    SecretsFilter: '*'
+    SecretsFilter: 'github-token,ssh-pub-key,ado-token'
     RunAsPreJob: true
   displayName: 'Azure Key Vault'
 
