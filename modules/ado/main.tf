@@ -75,14 +75,15 @@ resource "azuredevops_build_definition" "pipeline_1" {
 
 }
 
-# resource "azuredevops_pipeline_authorization" "example" {
-#   project_id  = azuredevops_project.project.id
-#   resource_id = var.service_principal_id
-#   type        = "endpoint"
-#   pipeline_id = azuredevops_build_definition.pipeline_1.id
+resource "azuredevops_pipeline_authorization" "example" {
+  project_id  = azuredevops_project.project.id
+  resource_id = azuredevops_serviceendpoint_azurerm.example.id
+  type        = "endpoint"
+  # pipeline_id = azuredevops_build_definition.pipeline_1.id
+  # if no pipeline is provided it's all pipelines
 
-#   depends_on = [azuredevops_project.project ]
-# }
+  depends_on = [azuredevops_project.project, azuredevops_serviceendpoint_azurerm.example ]
+}
 
 resource "azuredevops_resource_authorization" "example" {
   project_id  = azuredevops_project.project.id
