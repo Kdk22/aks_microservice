@@ -76,7 +76,7 @@ resource "azuredevops_build_definition" "pipeline_1" {
 resource "azuredevops_pipeline_authorization" "example" {
   project_id  = azuredevops_project.project.id
   resource_id = azuredevops_agent_queue.agent-pool-queue.id
-  type        = "queue"
+  type        = "endpoint"
   pipeline_id = azuredevops_build_definition.pipeline_1.id
 }
 
