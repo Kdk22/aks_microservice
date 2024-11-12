@@ -75,14 +75,22 @@ resource "azuredevops_build_definition" "pipeline_1" {
 
 }
 
-resource "azuredevops_pipeline_authorization" "example" {
+# resource "azuredevops_pipeline_authorization" "example" {
+#   project_id  = azuredevops_project.project.id
+#   resource_id = var.service_principal_id
+#   type        = "endpoint"
+#   pipeline_id = azuredevops_build_definition.pipeline_1.id
+
+#   depends_on = [azuredevops_project.project ]
+# }
+
+resource "azuredevops_resource_authorization" "example" {
   project_id  = azuredevops_project.project.id
   resource_id = azuredevops_serviceendpoint_azurerm.example.id
+  authorized  = true
   type        = "endpoint"
-  pipeline_id = azuredevops_build_definition.pipeline_1.id
-
-  depends_on = [ azuredevops_serviceendpoint_azurerm.example, azuredevops_project.project ]
 }
+
 
 
 resource "azuredevops_serviceendpoint_azurerm" "example" {

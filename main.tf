@@ -142,7 +142,7 @@ module "devops" {
   }
 
   depends_on = [
-    module.keyvault
+    module.keyvault, module.ServicePrincipal
   ]
 }
 
