@@ -48,6 +48,8 @@ resource "azuredevops_agent_pool" "agent-pool" {
 resource "azuredevops_agent_queue" "agent-pool-queue" {
   project_id    = azuredevops_project.project.id
   agent_pool_id = azuredevops_agent_pool.agent-pool.id
+
+  depends_on = [ azuredevops_agent_pool.agent-pool, azuredevops_project.project ]
 }
 
 
@@ -75,9 +77,11 @@ resource "azuredevops_build_definition" "pipeline_1" {
 
 resource "azuredevops_pipeline_authorization" "example" {
   project_id  = azuredevops_project.project.id
-  resource_id = azuredevops_agent_queue.agent-pool-queue.id
+  resource_id = azuredevops_serviceendpoint_azurerm.example.id
   type        = "endpoint"
   pipeline_id = azuredevops_build_definition.pipeline_1.id
+
+  depends_on = [ azuredevops_serviceendpoint_azurerm.example, azuredevops_project.project ]
 }
 
 
