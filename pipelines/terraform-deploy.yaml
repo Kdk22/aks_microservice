@@ -9,7 +9,7 @@ variables:
   value: 'dev'
 
 - name: 'backend_rg'
-  value: 'store-tfstatefile'
+  value: 'store-state-file-rg'
 
 - name: 'backend_storageaccount'
   value: 'backupstatefile'
@@ -31,13 +31,13 @@ steps:
   inputs:
     azureSubscription: 'aks-project2-spn'
     KeyVaultName: 'aks-project2'
-    SecretsFilter: 'github-token,ssh-pub-key,ado-token'
+    SecretsFilter: '*'
     RunAsPreJob: true
   displayName: 'Azure Key Vault'
 
 - script: |
         echo "Using client secret"
-        echo "Client Secret: $(githubToken)"
+        echo "Client Secret: $(github-token)"
 
 
 pool:

@@ -1,5 +1,5 @@
-service_principal_name   = "aks-project2-spn"
-keyvault_name            = "aks-project2"
+service_principal_name   = "aks-proj-spn"
+keyvault_name            = "aks-proj-kv"
 ado_org_service_url      = "https://dev.azure.com/utft0"
 project_name             = "Aks-Terra"
 ado_pipeline_yaml_path_1 = "pipelines/terraform-deploy.yaml"

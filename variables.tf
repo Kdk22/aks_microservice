@@ -17,8 +17,8 @@ variable "resource_groups" {
     tag      = string
   }))
   default = {
-    "rg1" = { location = "westus2", name = "store-tfstatefile", tag = "storestatefile" },
-    "rg2" = { location = "westus2", name = "aks-deployment", tag = "aks-project2" },
+    "rg1" = { location = "westus2", name = "store-state-file-rg", tag = "store-state-file-rg" },
+    "rg2" = { location = "westus2", name = "aks-terra-pro-rg", tag = "aks-terra-pro-rg" },
 
   }
 }

@@ -1,6 +1,6 @@
 // Output for azuread_application
 output "application_id" {
-  value = azuread_application.main.application_id
+  value = azuread_application.main.id 
 }
 
 output "application_object_id" {
@@ -17,7 +17,7 @@ output "service_principal_id" {
 }
 
 output "service_principal_application_id" {
-  value = azuread_service_principal.main.application_id
+  value = azuread_service_principal.main.id
 }
 
 output "service_principal_object_id" {

@@ -33,136 +33,139 @@ resource "azurerm_storage_container" "blob_container" {
 }
 
 
-# module "ServicePrincipal" {
-#   source                 = "./modules/sp"
-#   service_principal_name = var.service_principal_name
-#   depends_on = [
-#     azurerm_resource_group.rg
-#   ]
-# }
+module "ServicePrincipal" {
+  source                 = "./modules/sp"
+  service_principal_name = var.service_principal_name
+  depends_on = [
+    azurerm_resource_group.rg
+  ]
+}
 
-# resource "azurerm_role_assignment" "rolespn" {
+resource "azurerm_role_assignment" "rolespn" {
 
-#   scope              = data.azurerm_subscription.primary.id
-#   role_definition_name = "Contributor"
-#   principal_id       = data.azurerm_client_config.example.object_id
-# }
-
-
-# module "keyvault" {
-#   source                      = "./modules/kv"
-#   keyvault_name               = var.keyvault_name
-#   resource_group_name         = azurerm_resource_group.rg["rg2"].name
-#   location                    = azurerm_resource_group.rg["rg2"].location
-
-#   depends_on = [
-#     module.ServicePrincipal,  azurerm_resource_group.rg
-#   ]
-# }
-
-# # storing service connection to key vault
-
-# locals {
-#   secrets = {
-#   spn-sc = module.ServicePrincipal.service_principal_password_value
-#   github-token = var.github-token
-#   ssh-pub-key = var.SSH_PUBLIC_KEY
-#   ado-token = var.ado-token
-# }
-# }
-
-# resource "azurerm_key_vault_secret" "example" {
-#   for_each            = local.secrets
-#   name                = each.key
-#   value               = each.value
-#   key_vault_id = module.keyvault.keyvault_id
-
-#   depends_on = [
-#     module.keyvault
-#   ]
-# }
-
-# # give permission to sp to access keyvault
-
-# # this permission is for service connection from app registration, this is given to store database secrets to key vault
-# resource "azurerm_key_vault_access_policy" "kv_access_policy_sc" {
-
-#   key_vault_id = module.keyvault.keyvault_id
-#   tenant_id    = data.azurerm_client_config.current.tenant_id
-#   object_id    = module.ServicePrincipal.service_principal_object_id
-#   key_permissions = [
-#     "Get", "List"
-#   ]
-#   secret_permissions = [
-#     "Get", "Backup", "Delete", "List", "Purge", "Recover", "Restore", "Set"
-#   ]
-
-#   depends_on = [module.keyvault]
-# }
-
-# # permission to my self
-# resource "azurerm_key_vault_access_policy" "kv_access_policy_me" {
-#   key_vault_id       = azurerm_key_vault.kv.id
-#   tenant_id    = data.azurerm_client_config.current.tenant_id
-#   object_id    = data.azurerm_client_config.current.object_id
-#   key_permissions    = ["Get", "List"]
-#   secret_permissions = ["Get", "Backup", "Delete", "List", "Purge", "Recover", "Restore", "Set"]
-
-#   depends_on = [module.keyvault]
-# }
-
-# provider "azuredevops" {
-#   org_service_url       = var.ado_org_service_url
-#   personal_access_token = var.ado-token
-# }
-
-# module "devops" {
-#   source                   = "./modules/ado"
-#   project_name             = var.project_name
-#   ado_github_id            = var.ado_github_id
-#   ado_pipeline_yaml_path_1 = var.ado_pipeline_yaml_path_1
-#   github_pat           = var.github-token
-#   service_principal_id = module.ServicePrincipal.service_principal_application_id
-#   service_principal_secret = module.ServicePrincipal.service_principal_password_value
-#   spn_tenant_id = data.azurerm_client_config.current.tenant_id
-#   subscription_name = data.azurerm_subscription.primary.display_name
-
-#   spn_subscription_id = data.azurerm_client_config.current.subscription_id
+  scope              = data.azurerm_subscription.primary.id
+  role_definition_name = "Contributor"
+  principal_id       = module.ServicePrincipal.service_principal_object_id
+   #data.azurerm_client_config.current.object_id if you want to give permission to yourself but
+   # i have already given
+  depends_on = [ module.ServicePrincipal ]
+}
 
 
+module "keyvault" {
+  source                      = "./modules/kv"
+  keyvault_name               = var.keyvault_name
+  resource_group_name         = azurerm_resource_group.rg["rg2"].name
+  location                    = azurerm_resource_group.rg["rg2"].location
+
+  depends_on = [
+    module.ServicePrincipal,  azurerm_resource_group.rg
+  ]
+}
+
+# storing service connection to key vault
+
+locals {
+  secrets = {
+  spn-sc = module.ServicePrincipal.service_principal_password_value
+  github-token = var.github-token
+  ssh-pub-key = var.SSH_PUBLIC_KEY
+  ado-token = var.ado-token
+  }
+}
+
+resource "azurerm_key_vault_secret" "example" {
+  for_each            = local.secrets
+  name                = each.key
+  value               = each.value
+  key_vault_id = module.keyvault.keyvault_id
+
+  depends_on = [
+    module.keyvault, azurerm_key_vault_access_policy.kv_access_policy_me, azurerm_key_vault_access_policy.kv_access_policy_sc
+  ]
+}
+
+# give permission to sp to access keyvault
+
+# this permission is for service connection from app registration, this is given to store database secrets to key vault
+resource "azurerm_key_vault_access_policy" "kv_access_policy_sc" {
+
+  key_vault_id = module.keyvault.keyvault_id
+  tenant_id    = data.azurerm_client_config.current.tenant_id
+  object_id    = module.ServicePrincipal.service_principal_object_id
+  key_permissions = [
+    "Get", "List"
+  ]
+  secret_permissions = [
+    "Get", "Backup", "Delete", "List", "Purge", "Recover", "Restore", "Set"
+  ]
+
+  depends_on = [module.keyvault]
+}
+
+# permission to my self
+resource "azurerm_key_vault_access_policy" "kv_access_policy_me" {
+  key_vault_id       = module.keyvault.keyvault_id
+  tenant_id    = data.azurerm_client_config.current.tenant_id
+  object_id    = data.azurerm_client_config.current.object_id
+  key_permissions    = ["Get", "List"]
+  secret_permissions = ["Get", "Backup", "Delete", "List", "Purge", "Recover", "Restore", "Set"]
+
+  depends_on = [module.keyvault]
+}
+
+provider "azuredevops" {
+  org_service_url       = var.ado_org_service_url
+  personal_access_token = var.ado-token
+}
+
+module "devops" {
+  source                   = "./modules/ado"
+  project_name             = var.project_name
+  ado_github_id            = var.ado_github_id
+  ado_pipeline_yaml_path_1 = var.ado_pipeline_yaml_path_1
+  github_pat           = var.github-token
+  service_principal_id = module.ServicePrincipal.service_principal_application_id
+  service_principal_secret = module.ServicePrincipal.service_principal_password_value
+  spn_tenant_id = data.azurerm_client_config.current.tenant_id
+  subscription_name = data.azurerm_subscription.primary.display_name
+
+  spn_subscription_id = data.azurerm_client_config.current.subscription_id
 
 
-#   providers = {
-#     azuredevops = azuredevops
-#   }
-
-#   depends_on = [
-#     module.keyvault, module.ServicePrincipal
-#   ]
-# }
 
 
-# module "vnet"{
-#   source = "./modules/vnet"
-#   AKS_VNET_NAME = var.AKS_VNET_NAME
-#   LOCATION = azurerm_resource_group.rg["rg2"].location
-#   RESOURCE_GROUP_NAME      = azurerm_resource_group.rg["rg2"].name
-#   AKS_ADDRESS_SPACE = var.AKS_ADDRESS_SPACE
-#   AKS_SUBNET_ADDRESS_PREFIX = var.AKS_SUBNET_ADDRESS_PREFIX
-#   AKS_SUBNET_NAME = var.AKS_SUBNET_NAME
-#   APPGW_SUBNET_NAME = var.APPGW_SUBNET_NAME
-#   APPGW_SUBNET_ADDRESS_PREFIX = var.APPGW_SUBNET_ADDRESS_PREFIX
-#   ACR_VNET_NAME = var.ACR_VNET_NAME
-#   ACR_SUBNET_NAME = var.ACR_SUBNET_NAME
-#   ACR_ADDRESS_SPACE = var.ACR_ADDRESS_SPACE
-#   ACR_SUBNET_ADDRESS_PREFIX = var.ACR_SUBNET_ADDRESS_PREFIX
-#   AGENT_VNET_NAME = var.AGENT_VNET_NAME
-#   AGENT_ADDRESS_SPACE = var.AGENT_ADDRESS_SPACE
-#   AGENT_SUBNET_NAME = var.AGENT_SUBNET_NAME
-#   AGENT_SUBNET_ADDRESS_PREFIX = var.AGENT_SUBNET_ADDRESS_PREFIX
+  providers = {
+    azuredevops = azuredevops
+  }
 
-#   depends_on = [  azurerm_resource_group.rg ]
-# }
+  depends_on = [
+    module.keyvault, module.ServicePrincipal
+  ]
+}
+
+
+module "vnet"{
+  source = "./modules/vnet"
+  AKS_VNET_NAME = var.AKS_VNET_NAME
+  LOCATION = azurerm_resource_group.rg["rg2"].location
+  RESOURCE_GROUP_NAME      = azurerm_resource_group.rg["rg2"].name
+  AKS_ADDRESS_SPACE = var.AKS_ADDRESS_SPACE
+  AKS_SUBNET_ADDRESS_PREFIX = var.AKS_SUBNET_ADDRESS_PREFIX
+  AKS_SUBNET_NAME = var.AKS_SUBNET_NAME
+  APPGW_SUBNET_NAME = var.APPGW_SUBNET_NAME
+  APPGW_SUBNET_ADDRESS_PREFIX = var.APPGW_SUBNET_ADDRESS_PREFIX
+  ACR_VNET_NAME = var.ACR_VNET_NAME
+  ACR_SUBNET_NAME = var.ACR_SUBNET_NAME
+  ACR_ADDRESS_SPACE = var.ACR_ADDRESS_SPACE
+  ACR_SUBNET_ADDRESS_PREFIX = var.ACR_SUBNET_ADDRESS_PREFIX
+  AGENT_VNET_NAME = var.AGENT_VNET_NAME
+  AGENT_ADDRESS_SPACE = var.AGENT_ADDRESS_SPACE
+  AGENT_SUBNET_NAME = var.AGENT_SUBNET_NAME
+  AGENT_SUBNET_ADDRESS_PREFIX = var.AGENT_SUBNET_ADDRESS_PREFIX
+
+  depends_on = [  azurerm_resource_group.rg ]
+}
 
 # module "agent-vm"{
 #   source = "./modules/agentvm"
