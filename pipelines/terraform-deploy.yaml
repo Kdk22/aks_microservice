@@ -29,8 +29,8 @@ variables:
 steps:
 - task: AzureKeyVault@2
   inputs:
-    azureSubscription: 'aks-project2-spn'
-    KeyVaultName: 'aks-project2'
+    azureSubscription: '$(serviceconnection)'
+    KeyVaultName: 'aks-proj-kv'
     SecretsFilter: '*'
     RunAsPreJob: true
   displayName: 'Azure Key Vault'
