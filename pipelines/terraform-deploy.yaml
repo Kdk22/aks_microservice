@@ -3,7 +3,7 @@ trigger:
 variables:
 
 - name: 'serviceconnection'
-  value: 'aks-project2-spn'
+  value: 'aks-proj-spn'
 
 - name: 'environment'
   value: 'dev'
