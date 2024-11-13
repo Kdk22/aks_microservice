@@ -36,10 +36,10 @@ variable "app_registration_name" {
   default     = "aks-project-app"
 
 }
-variable "subscription_path" {
+variable "subscription_id" {
   type        = string
-  description = "The url of subscription which "
-  default     = "/subscriptions/75e2cef5-d3ca-42ff-8b0d-4dab256b9453"
+  description = "The subscription id "
+  default     = "75e2cef5-d3ca-42ff-8b0d-4dab256b9453"
 }
 
 variable "keyvault_name" {

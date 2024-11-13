@@ -28,9 +28,10 @@ resource "azurerm_storage_account" "storage_account" {
 
 resource "azurerm_storage_container" "blob_container" {
   name                  = var.blob_state_file
-  storage_account_name  = azurerm_storage_account.storage_account.name
+  storage_account_id   = azurerm_storage_account.storage_account.id
   container_access_type = "private"
 }
+
 
 # module "ServicePrincipal" {
 #   source                 = "./modules/sp"
