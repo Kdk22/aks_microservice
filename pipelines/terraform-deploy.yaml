@@ -3,7 +3,7 @@ trigger:
 variables:
 
 - name: 'serviceconnection'
-  value: 'aks-proj-spn'
+  value: 'AKS-TERRA-AzureRM'
 
 - name: 'environment'
   value: 'dev'
