@@ -1,24 +1,38 @@
-output "service_principal_name" {
-  description = "The object id of service principal. Can be used to assign roles to user."
-  value       = azuread_service_principal.main.display_name
+// Output for azuread_application
+output "application_id" {
+  value = azuread_application.main.application_id
+}
+
+output "application_object_id" {
+  value = azuread_application.main.object_id
+}
+
+output "application_display_name" {
+  value = azuread_application.main.display_name
+}
+
+// Output for azuread_service_principal
+output "service_principal_id" {
+  value = azuread_service_principal.main.id
+}
+
+output "service_principal_application_id" {
+  value = azuread_service_principal.main.application_id
 }
 
 output "service_principal_object_id" {
-  description = "The object id of service principal. Can be used to assign roles to user."
-  value       = azuread_service_principal.main.object_id
+  value = azuread_service_principal.main.object_id
 }
 
-output "service_principal_tenant_id" {
-  value = azuread_service_principal.main.application_tenant_id
+output "service_principal_display_name" {
+  value = azuread_service_principal.main.display_name
 }
 
-output "client_id" {
-  description = "The application id of AzureAD application created."
-  value       = azuread_application.main.client_id
+// Output for azuread_service_principal_password
+output "service_principal_password_id" {
+  value = azuread_service_principal_password.main.id
 }
 
-output "client_secret" {
-  description = "Password for service principal."
-  value       = azuread_service_principal_password.main.value
- 
+output "service_principal_password_value" {
+  value = azuread_service_principal_password.main.value
 }

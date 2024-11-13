@@ -26,7 +26,14 @@ variable "resource_groups" {
 variable "service_principal_name" {
   type        = string
   description = "This is service principle name"
-    default    = "aks-project2-spn"
+  default     = "aks-project0-spn"
+
+}
+
+variable "app_registration_name" {
+  type        = string
+  description = "This is app registration name"
+  default     = "aks-project-app"
 
 }
 variable "subscription_path" {
@@ -36,13 +43,13 @@ variable "subscription_path" {
 }
 
 variable "keyvault_name" {
-  type = string
+  type        = string
   description = "Key Vault Name"
   default     = "aks-project2"
 }
 
 variable "github-token" {
-  type = string
+  type        = string
   description = "The pat"
 }
 
@@ -62,21 +69,21 @@ variable "ado_pipeline_yaml_path_1" {
 variable "ado_org_service_url" {
   type        = string
   description = "Path to project url"
-  default = "blank"
+  default     = "blank"
 
 }
 
 variable "project_name" {
   type        = string
   description = "Project Name"
-  default = "Aks-Terra"
+  default     = "Aks-Terra"
 
 }
 variable "ado-token" {
   type        = string
   description = "Azure Devops Token"
-  default = "blank"
-  
+  default     = "blank"
+
 }
 
 # vnet variables 
@@ -111,11 +118,11 @@ variable "PRIVATE_ACR_NAME" { type = string }
 variable "ACR_SKU" { type = string }
 variable "ACR_NAME" {
   type = string
-  
+
 }
 variable "SSH_PUBLIC_KEY" {
   type = string
-  
+
 }
 
 
@@ -146,5 +153,5 @@ variable "APPGW_PUBLIC_IP_NAME" {
 }
 variable "DNS_PREFIX" {
   type = string
-  
+
 }

@@ -12,6 +12,7 @@ resource "azuread_service_principal" "main" {
   description = " This is the service principle for aks project . It is used in devops pipeline as well"
 }
 
+
 resource "azuread_service_principal_password" "main" {
   service_principal_id = azuread_service_principal.main.id
   depends_on = [ azuread_application.main ]

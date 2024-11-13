@@ -85,13 +85,6 @@ resource "azuredevops_pipeline_authorization" "example" {
   depends_on = [azuredevops_project.project, azuredevops_serviceendpoint_azurerm.example ]
 }
 
-resource "azuredevops_resource_authorization" "example" {
-  project_id  = azuredevops_project.project.id
-  resource_id = azuredevops_serviceendpoint_azurerm.example.id
-  authorized  = true
-  type        = "endpoint"
-}
-
 
 
 resource "azuredevops_serviceendpoint_azurerm" "example" {

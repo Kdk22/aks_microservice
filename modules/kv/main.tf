@@ -14,30 +14,5 @@ resource "azurerm_key_vault" "kv" {
  
 }
 
-# this permission is for service connection from app registration, this is given to store database secrets to key vault
-resource "azurerm_key_vault_access_policy" "kv_access_policy_sc" {
 
-  key_vault_id = azurerm_key_vault.kv.id
-  tenant_id    = data.azurerm_client_config.current.tenant_id
-  object_id    = "0606853f-7685-424e-8d13-8f2c8b47d34e"
-  key_permissions = [
-    "Get", "List"
-  ]
-  secret_permissions = [
-    "Get", "Backup", "Delete", "List", "Purge", "Recover", "Restore", "Set"
-  ]
-
-  depends_on = [azurerm_key_vault.kv]
-}
-
-# permission to my self
-resource "azurerm_key_vault_access_policy" "kv_access_policy_me" {
-  key_vault_id       = azurerm_key_vault.kv.id
-  tenant_id          = data.azurerm_client_config.current.tenant_id
-  object_id          = "ab35c899-90de-4dcc-9d4f-ebae7a569976"
-  key_permissions    = ["Get", "List"]
-  secret_permissions = ["Get", "Backup", "Delete", "List", "Purge", "Recover", "Restore", "Set"]
-
-  depends_on = [azurerm_key_vault.kv]
-}
 
