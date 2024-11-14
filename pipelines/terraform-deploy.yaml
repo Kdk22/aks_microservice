@@ -8,6 +8,9 @@ variables:
 - name: 'serviceconnection'
   value: 'AKS-TERRA-AzureRM'
 
+- name: 'environment'
+  value: 'dev'
+
 - name: 'backend_rg'
   value: 'store-state-file-rg'
 
@@ -107,6 +110,7 @@ stages:
     jobs:
       - deployment: 'Approval_Apply_Stage'
         displayName: 'Approval gate for this stage'
+        environment: 'dev'
         strategy:
           runOnce:
             deploy:

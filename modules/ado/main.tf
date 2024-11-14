@@ -75,15 +75,39 @@ resource "azuredevops_build_definition" "pipeline_1" {
 
 }
 
-resource "azuredevops_pipeline_authorization" "example" {
-  project_id  = azuredevops_project.project.id
-  resource_id = azuredevops_serviceendpoint_azurerm.example.id
-  type        = "endpoint"
-  # pipeline_id = azuredevops_build_definition.pipeline_1.id
-  # if no pipeline is provided it's all pipelines
-
-  depends_on = [azuredevops_project.project, azuredevops_serviceendpoint_azurerm.example ]
+resource "azuredevops_environment" "env" {
+  project_id   = azuredevops_project.project.id
+  name         = "dev"
+  description  = "Development environment"
 }
+
+locals {
+  resource_ids = {
+    environment = azuredevops_environment.env.id
+    endpoint    = azuredevops_serviceendpoint_azurerm.example.id
+    # Add more resources as needed
+  }
+}
+
+resource "azuredevops_pipeline_authorization" "multiple_auths" {
+  for_each = local.resource_ids
+  
+  project_id  = azuredevops_project.project.id
+  resource_id = each.value
+  type        = each.key == "environment" ? "environment" : "endpoint"
+
+  depends_on = [azuredevops_project.project, azuredevops_serviceendpoint_azurerm.example, azuredevops_environment.env ]
+}
+
+# resource "azuredevops_pipeline_authorization" "example" {
+#   project_id  = azuredevops_project.project.id
+#   resource_id = azuredevops_serviceendpoint_azurerm.example.id
+#   type        = "endpoint"
+#   # pipeline_id = azuredevops_build_definition.pipeline_1.id
+#   # if no pipeline is provided it's all pipelines
+
+#   depends_on = [azuredevops_project.project, azuredevops_serviceendpoint_azurerm.example ]
+# }
 
 # resource "azuredevops_resource_authorization" "example" {
 #   project_id  = azuredevops_project.project.id
