@@ -23,21 +23,22 @@ variables:
 - name: 'working_directory'
   value: '$(System.DefaultWorkingDirectory)'
 
-
-
-
-steps:
-- task: AzureKeyVault@2
-  inputs:
-    azureSubscription: '$(serviceconnection)'
-    KeyVaultName: 'aks-proj-kv'
-    SecretsFilter: '*'
-    RunAsPreJob: true
-  displayName: 'Azure Key Vault'
-
-
 pool:
   vmImage: ubuntu-latest
+
+
+stages:
+  - stage: KeyVaultAccess
+    jobs:
+      - job: GetSecrets
+        steps:
+        - task: AzureKeyVault@2
+          inputs:
+            azureSubscription: '$(serviceconnection)'
+            KeyVaultName: 'aks-proj-kv'
+            SecretsFilter: '*'
+            RunAsPreJob: true
+          displayName: 'Azure Key Vault'
 
   stages :
     - stage: "runCheckov"
