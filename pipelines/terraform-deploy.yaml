@@ -111,6 +111,11 @@ stages:
       - deployment: 'Approval_Apply_Stage'
         displayName: 'Approval gate for this stage'
         environment: 'dev'
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+              - checkout: self
       - job: plan
         displayName: 'Terraform_plan_dev'
         continueOnError: false
