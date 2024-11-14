@@ -1,7 +1,10 @@
 trigger:
 - main
-variables:
 
+pool:
+  vmImage: ubuntu-latest
+
+variables:
 - name: 'serviceconnection'
   value: 'AKS-TERRA-AzureRM'
 
@@ -23,8 +26,7 @@ variables:
 - name: 'working_directory'
   value: '$(System.DefaultWorkingDirectory)'
 
-pool:
-  vmImage: ubuntu-latest
+
 
 
 stages:
