@@ -35,10 +35,6 @@ steps:
     RunAsPreJob: true
   displayName: 'Azure Key Vault'
 
-- script: |
-        echo "Using client secret"
-        echo "Client Secret: $(github-token)"
-
 
 pool:
   vmImage: ubuntu-latest
