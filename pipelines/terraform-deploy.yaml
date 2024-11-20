@@ -38,9 +38,25 @@ stages:
           inputs:
             azureSubscription: '$(serviceconnection)'
             KeyVaultName: 'aks-proj-kv'
-            SecretsFilter: '*'
+            SecretsFilter: 'github-token,ado-token,ssh-pub-key'
             RunAsPreJob: true
           displayName: 'Azure Key Vault'
+        
+        # Verification task
+        - task: Bash@3
+        inputs:
+          targetType: 'inline'
+          script: |
+            # Verify secrets are available (safely)
+            for secret in "github-token" "ado-token" "ssh-pub-key"; do
+              value="${!secret}"
+              if [ -z "$value" ]; then
+                echo "##[error]Secret $secret is not set!"
+                exit 1
+              else
+                echo "##[debug]Secret $secret is set (length: ${#value})"
+              fi
+            done
 
   - stage: "runCheckov"
     displayName: "Checkov: Static Code Analysis"
@@ -140,7 +156,7 @@ stages:
           inputs:
             provider: 'azurerm'
             command: 'plan'
-            commandOptions: '-input=false -var-file="terraform.tfvars" -var="github-token=$(github-token)" -var="ado-token=$(ado-token)" -var="SSH_PUBLIC_KEY=$(ssh-pub-key)"'
+            commandOptions: '-input=false -var-file="terraform.tfvars" -var="github_token=$(github-token)" -var="ado_token=$(ado-token)" -var="ssh_public_key=$(ssh-pub-key)"'
             environmentServiceNameAzureRM: $(serviceconnection)
             workingDirectory: '$(working_directory)'
 
@@ -224,7 +240,7 @@ stages:
           inputs:
             provider: 'azurerm'
             command: 'plan'
-            commandOptions: '-input=false -var-file="terraform.tfvars" -var="github-token=$(github-token)" -var="ado-token=$(ado-token)" -var="SSH_PUBLIC_KEY=$(ssh-pub-key)"'
+            commandOptions: '-input=false -var-file="terraform.tfvars" -var="github_token=$(github-token)" -var="ado_token=$(ado-token)" -var="ssh_public_key=$(ssh-pub-key)"'
             environmentServiceNameAzureRM: $(serviceconnection)
             workingDirectory: '$(working_directory)'
 
@@ -233,6 +249,6 @@ stages:
           inputs:
             provider: 'azurerm'
             command: 'apply'
-            commandOptions: '-input=false -auto-approve -var-file="terraform.tfvars" -var="github-token=$(github-token)" -var="ado-token=$(ado-token)" -var="SSH_PUBLIC_KEY=$(ssh-pub-key)"'
+            commandOptions: '-input=false -auto-approve -var-file="terraform.tfvars" -var="github_token=$(github-token)" -var="ado_token=$(ado-token)" -var="ssh_public_key=$(ssh-pub-key)"'
             environmentServiceNameAzureRM: $(serviceconnection)
             workingDirectory: '$(working_directory)'

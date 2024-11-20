@@ -185,7 +185,7 @@ variable "AGENT_VNET_ID" {
 }
 variable "ssh_public_key" {
   type = string
-  
+  sensitive = true
 }
 variable "rg_id" {
   type = string

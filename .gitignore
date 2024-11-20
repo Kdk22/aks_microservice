@@ -41,3 +41,4 @@ override.tf.json
 backend-config.txt
 *.tfbackend
 secret.tfvars
+terraform.auto.tfvars

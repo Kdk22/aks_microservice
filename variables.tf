@@ -48,9 +48,10 @@ variable "keyvault_name" {
   default     = "aks-project2"
 }
 
-variable "github-token" {
+variable "github_token" {
   type        = string
   description = "The pat"
+  sensitive   = true
 }
 
 # inside ado variables:
@@ -79,9 +80,10 @@ variable "project_name" {
   default     = "Aks-Terra"
 
 }
-variable "ado-token" {
+variable "ado_token" {
   type        = string
   description = "Azure Devops Token"
+  sensitive   = true
 }
 
 # vnet variables 
@@ -118,8 +120,9 @@ variable "ACR_NAME" {
   type = string
 
 }
-variable "SSH_PUBLIC_KEY" {
-  type = string
+variable "ssh_public_key" {
+  type      = string
+  sensitive = true
 }
 
 

@@ -68,9 +68,9 @@ module "keyvault" {
 locals {
   secrets = {
     spn-sc       = module.ServicePrincipal.service_principal_password_value
-    github-token = var.github-token
-    ssh-pub-key  = var.SSH_PUBLIC_KEY
-    ado-token    = var.ado-token
+    github-token = var.github_token
+    ssh-pub-key  = var.ssh_public_key
+    ado-token    = var.ado_token
   }
 }
 
@@ -116,7 +116,7 @@ resource "azurerm_key_vault_access_policy" "kv_access_policy_me" {
 
 provider "azuredevops" {
   org_service_url       = var.ado_org_service_url
-  personal_access_token = var.ado-token
+  personal_access_token = var.ado_token
 }
 
 module "devops" {
@@ -124,7 +124,7 @@ module "devops" {
   project_name             = var.project_name
   ado_github_id            = var.ado_github_id
   ado_pipeline_yaml_path_1 = var.ado_pipeline_yaml_path_1
-  github_pat               = var.github-token
+  github_pat               = var.github_token
   service_principal_id     = module.ServicePrincipal.service_principal_application_id
   service_principal_secret = module.ServicePrincipal.service_principal_password_value
   spn_tenant_id            = data.azurerm_client_config.current.tenant_id
@@ -273,7 +273,7 @@ module "aks" {
   APPGW_SUBNET_ID     = module.vnet.appgw_subnet_id
   DNS_PREFIX          = var.DNS_PREFIX
   rg_id               = azurerm_resource_group.rg["rg2"].id
-  ssh_public_key      = var.SSH_PUBLIC_KEY
+  ssh_public_key      = var.ssh_public_key
 
 
   depends_on = [
