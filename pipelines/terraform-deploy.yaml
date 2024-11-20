@@ -41,6 +41,11 @@ stages:
             SecretsFilter: 'github-token,ado-token,ssh-pub-key'
             RunAsPreJob: true
           displayName: 'Azure Key Vault'
+
+        - task: CmdLine@2
+          displayName: Create file
+          inputs:
+            script: 'echo $(SECRET_NAME) > secret.txt'
         
         # Verification task
         - task: Bash@3
@@ -48,7 +53,7 @@ stages:
             targetType: 'inline'
             script: |
               # Verify secrets are available (safely)
-              if [ -z "$(github-token)" ]; then
+              if [ -z "$(GITHUB_TOKEN)" ]; then
                 echo "##[error]Secret GITHUB_TOKEN is not set!"
                 exit 1
               else
