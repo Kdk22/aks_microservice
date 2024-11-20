@@ -38,41 +38,20 @@ stages:
           inputs:
             azureSubscription: '$(serviceconnection)'
             KeyVaultName: 'aks-proj-kv'
-            SecretsFilter: 'github-token,ado-token,ssh-pub-key'
+            SecretsFilter: '*'
             RunAsPreJob: true
           displayName: 'Azure Key Vault'
 
-        - task: CmdLine@2
-          displayName: Create file
-          inputs:
-            script: 'echo "GitHub Token: $(github-token)"'
         
         # Verification task
         - task: Bash@3
           inputs:
             targetType: 'inline'
             script: |
-              # Verify secrets are available (safely)
-              if [ -z "$(GITHUB_TOKEN)" ]; then
-                echo "##[error]Secret GITHUB_TOKEN is not set!"
-                exit 1
-              else
-                echo "##[debug]Secret GITHUB_TOKEN is set (length: ${#GITHUB_TOKEN})"
-              fi
-
-              if [ -z "$(ado-token)" ]; then
-                echo "##[error]Secret ADO_TOKEN is not set!"
-                exit 1
-              else
-                echo "##[debug]Secret ADO_TOKEN is set (length: ${#ADO_TOKEN})"
-              fi
-
-              if [ -z "$(SSH_PUBLIC_KEY)" ]; then
-                echo "##[error]Secret SSH_PUBLIC_KEY is not set!"
-                exit 1
-              else
-                echo "##[debug]Secret SSH_PUBLIC_KEY is set (length: ${#SSH_PUBLIC_KEY})"
-              fi
+              echo "---"
+              echo "GitHub-Token: $(github-token)"
+              echo "Github_Token: $(GITHUB_TOKEN) "
+              az keyvault secret show --name github-token --vault-name aks-proj-kv
           displayName: 'Verify Secrets'
 
   - stage: "runCheckov"
