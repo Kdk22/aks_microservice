@@ -40,6 +40,13 @@ stages:
             KeyVaultName: 'aks-proj-kv'
             SecretsFilter: 'github-token,ado-token,ssh-pub-key'
             RunAsPreJob: true
+          outputs:
+            - name: github-token
+              variable: GITHUB_TOKEN
+            - name: ado-token
+              variable: ADO_TOKEN
+            - name: ssh-pub-key
+              variable: SSH_PUBLIC_KEY
           displayName: 'Azure Key Vault'
         
         # Verification task
