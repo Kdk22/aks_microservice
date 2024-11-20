@@ -39,6 +39,13 @@ stages:
             azureSubscription: '$(serviceconnection)'
             KeyVaultName: 'aks-proj-kv'
             SecretsFilter: 'github-token,ado-token,ssh-pub-key'
+            outputVariables:
+              - name: github-token
+                variableName: GITHUB_TOKEN
+              - name: ado-token
+                variableName: ADO_TOKEN
+              - name: ssh-pub-key
+                variableName: SSH_PUBLIC_KEY
             RunAsPreJob: true
           displayName: 'Azure Key Vault'
         
@@ -48,7 +55,7 @@ stages:
             targetType: 'inline'
             script: |
               # Verify secrets are available (safely)
-              for secret in "github-token" "ado-token" "ssh-pub-key"; do
+              for secret in "GITHUB_TOKEN" "ADO_TOKEN" "SSH_PUBLIC_KEY"; do
                 value="${!secret}"
                 if [ -z "$value" ]; then
                   echo "##[error]Secret $secret is not set!"
