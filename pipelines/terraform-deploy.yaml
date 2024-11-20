@@ -140,7 +140,7 @@ stages:
           inputs:
             provider: 'azurerm'
             command: 'plan'
-            commandOptions: '-input=false -auto-approve -var-file="terraform.tfvars" -var="github-token=$(github-token)" -var="ado-token=$(ado-token)"-var="SSH_PUBLIC_KEY=$(ssh-pub-key)"'
+            commandOptions: '-input=false -var-file="terraform.tfvars" -var="github-token=$(github-token)" -var="ado-token=$(ado-token)"-var="SSH_PUBLIC_KEY=$(ssh-pub-key)"'
             environmentServiceNameAzureRM: $(serviceconnection)
             workingDirectory: '$(working_directory)'
 
