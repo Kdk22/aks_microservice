@@ -48,7 +48,7 @@ stages:
             targetType: 'inline'
             script: |
               # Verify secrets are available (safely)
-              for secret in "GITHUB_TOKEN" "ADO_TOKEN" "SSH_PUB_KEY"; do
+              for secret in "github-token" "ado-token" "ssh-pub-key"; do
                 value="${!secret}"
                 if [ -z "$value" ]; then
                   echo "##[error]Secret $secret is not set!"
