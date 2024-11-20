@@ -26,6 +26,9 @@ variables:
 - name: 'working_directory'
   value: '$(System.DefaultWorkingDirectory)'
 
+- name: 'terraform_version'
+  value: '4.10.0'
+
 
 
 
@@ -82,7 +85,7 @@ stages:
       - task: TerraformInstaller@0
         displayName: 'install'
         inputs:
-          terraformVersion: 'latest'
+          terraformVersion: $(terraform_version)
       - task: TerraformTaskV2@2
         displayName: 'init'
         inputs:
@@ -123,7 +126,7 @@ stages:
         - task: TerraformInstaller@0
           displayName: 'install'
           inputs:
-            terraformVersion: 'latest'
+            terraformVersion: $(terraform_version)
         - task: TerraformTaskV2@2
           displayName: init
           inputs:
@@ -201,7 +204,7 @@ stages:
         - task: TerraformInstaller@0
           displayName: 'install'
           inputs:
-            terraformVersion: 'latest'
+            terraformVersion: $(terraform_version)
         - task: TerraformTaskV2@2
           displayName: 'init'
           inputs:
@@ -224,7 +227,7 @@ stages:
           inputs:
             provider: 'azurerm'
             command: 'plan'
-            commandOptions: '-input=false -auto-approve -var-file="terraform.tfvars" -var="github-token =$(github-token)" -var="ado-token = $(ado-token)"-var="SSH_PUBLIC_KEY = $(ssh-pub-key)"'
+            commandOptions: '-input=false -var-file="terraform.tfvars" -var="github-token=$(github-token)" -var="ado-token=$(ado-token)"-var="SSH_PUBLIC_KEY=$(ssh-pub-key)"'
             environmentServiceNameAzureRM: $(serviceconnection)
             workingDirectory: '$(working_directory)'
 
