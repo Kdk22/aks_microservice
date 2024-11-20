@@ -45,7 +45,7 @@ stages:
         - task: CmdLine@2
           displayName: Create file
           inputs:
-            script: 'echo $(SECRET_NAME) > secret.txt'
+            script: 'echo "GitHub Token: $(github-token)"'
         
         # Verification task
         - task: Bash@3
