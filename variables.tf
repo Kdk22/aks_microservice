@@ -120,7 +120,6 @@ variable "ACR_NAME" {
 }
 variable "SSH_PUBLIC_KEY" {
   type = string
-
 }
 
 
