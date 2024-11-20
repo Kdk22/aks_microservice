@@ -26,9 +26,6 @@ variables:
 - name: 'working_directory'
   value: '$(System.DefaultWorkingDirectory)'
 
-- name: 'terraform_version'
-  value: '4.10.0'
-
 
 
 
@@ -85,7 +82,7 @@ stages:
       - task: TerraformInstaller@0
         displayName: 'install'
         inputs:
-          terraformVersion: $(terraform_version)
+          terraformVersion: 'latest'
       - task: TerraformTaskV2@2
         displayName: 'init'
         inputs:
@@ -126,7 +123,7 @@ stages:
         - task: TerraformInstaller@0
           displayName: 'install'
           inputs:
-            terraformVersion: $(terraform_version)
+            terraformVersion: 'latest'
         - task: TerraformTaskV2@2
           displayName: init
           inputs:
@@ -204,7 +201,7 @@ stages:
         - task: TerraformInstaller@0
           displayName: 'install'
           inputs:
-            terraformVersion: $(terraform_version)
+            terraformVersion: 'latest'
         - task: TerraformTaskV2@2
           displayName: 'init'
           inputs:
