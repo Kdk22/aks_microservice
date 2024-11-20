@@ -48,15 +48,26 @@ stages:
             targetType: 'inline'
             script: |
               # Verify secrets are available (safely)
-              for secret in "github-token" "ado-token" "ssh-pub-key"; do
-                value="${!secret}"
-                if [ -z "$value" ]; then
-                  echo "##[error]Secret $secret is not set!"
-                  exit 1
-                else
-                  echo "##[debug]Secret $secret is set (length: ${#value})"
-                fi
-              done
+              if [ -z "$(GITHUB_TOKEN)" ]; then
+                echo "##[error]Secret GITHUB_TOKEN is not set!"
+                exit 1
+              else
+                echo "##[debug]Secret GITHUB_TOKEN is set (length: ${#GITHUB_TOKEN})"
+              fi
+
+              if [ -z "$(ADO_TOKEN)" ]; then
+                echo "##[error]Secret ADO_TOKEN is not set!"
+                exit 1
+              else
+                echo "##[debug]Secret ADO_TOKEN is set (length: ${#ADO_TOKEN})"
+              fi
+
+              if [ -z "$(SSH_PUBLIC_KEY)" ]; then
+                echo "##[error]Secret SSH_PUBLIC_KEY is not set!"
+                exit 1
+              else
+                echo "##[debug]Secret SSH_PUBLIC_KEY is set (length: ${#SSH_PUBLIC_KEY})"
+              fi
           displayName: 'Verify Secrets'
 
   - stage: "runCheckov"
