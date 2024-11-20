@@ -271,8 +271,6 @@ module "aks" {
   AKS_SUBNET_ID               = module.vnet.aks_subnet_id
   APPGATEWAY_ID               = module.appgate.appgw_id
   APPGW_SUBNET_ID             = module.vnet.appgw_subnet_id
-  CLIENT_ID                   = module.ServicePrincipal.client_id
-  CLIENT_SECRET               = module.ServicePrincipal.client_secret
   DNS_PREFIX                  = var.DNS_PREFIX
   rg_id                       = azurerm_resource_group.rg["rg2"].id
   ssh_public_key              = var.SSH_PUBLIC_KEY

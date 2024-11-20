@@ -1,14 +1,5 @@
 
 
-variable "CLIENT_ID" {
-  type = string
-}
-variable "CLIENT_SECRET" {
-  type = string
-  sensitive = true
-}
-
-
 variable "NAME" {
   description = "(Required) Specifies the name of the AKS cluster."
   type        = string
