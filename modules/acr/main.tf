@@ -20,6 +20,8 @@ resource "azurerm_container_registry" "acr" {
   sku                           = var.ACR_SKU
   admin_enabled                 = false
   public_network_access_enabled = false
+# becasue here we are creating private acr so false
+
 
   network_rule_set {
     default_action = "Deny"
@@ -39,6 +41,8 @@ resource "azurerm_private_dns_zone" "acr-dns-zone" {
 
 }
 # Create azure private endpoint
+# this code snippet creates a secure 
+# private connection from a specific subnet within your virtual network to your Azure Container Registry.
 resource "azurerm_private_endpoint" "acr_private_endpoint" {
   name                = "${var.PRIVATE_ACR_NAME}-private-endpoint"
   resource_group_name = var.RESOURCE_GROUP_NAME
@@ -58,6 +62,7 @@ resource "azurerm_private_endpoint" "acr_private_endpoint" {
   }
 }
 
+# creates a virtual network link for a private DNS zone.
 resource "azurerm_private_dns_zone_virtual_network_link" "acr-vnet-link" {
   name                  = "acr-vnet-link"
   resource_group_name   = var.RESOURCE_GROUP_NAME

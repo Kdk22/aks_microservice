@@ -21,7 +21,7 @@ resource "azurerm_public_ip" "public_ip" {
   #domain_name_label   = var.domain_name_label # Maps to <domain_name_label>.<region>.cloudapp.azure.com
 }
 
-# Application gateway
+# Application gateway that defines the routing rule to backend
 resource "azurerm_application_gateway" "appgateway" {
   name                = var.APP_GATEWAY_NAME
   resource_group_name = var.RESOURCE_GROUP_NAME

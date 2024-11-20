@@ -28,7 +28,7 @@ resource "azurerm_storage_account" "storage_account" {
 
 resource "azurerm_storage_container" "blob_container" {
   name                  = var.blob_state_file
-  storage_account_id   = azurerm_storage_account.storage_account.id
+  storage_account_id    = azurerm_storage_account.storage_account.id
   container_access_type = "private"
 }
 
@@ -43,23 +43,23 @@ module "ServicePrincipal" {
 
 resource "azurerm_role_assignment" "rolespn" {
 
-  scope              = data.azurerm_subscription.primary.id
+  scope                = data.azurerm_subscription.primary.id
   role_definition_name = "Contributor"
-  principal_id       = module.ServicePrincipal.service_principal_object_id
-   #data.azurerm_client_config.current.object_id if you want to give permission to yourself but
-   # i have already given
-  depends_on = [ module.ServicePrincipal ]
+  principal_id         = module.ServicePrincipal.service_principal_object_id
+  #data.azurerm_client_config.current.object_id if you want to give permission to yourself but
+  # i have already given
+  depends_on = [module.ServicePrincipal]
 }
 
 
 module "keyvault" {
-  source                      = "./modules/kv"
-  keyvault_name               = var.keyvault_name
-  resource_group_name         = azurerm_resource_group.rg["rg2"].name
-  location                    = azurerm_resource_group.rg["rg2"].location
+  source              = "./modules/kv"
+  keyvault_name       = var.keyvault_name
+  resource_group_name = azurerm_resource_group.rg["rg2"].name
+  location            = azurerm_resource_group.rg["rg2"].location
 
   depends_on = [
-    module.ServicePrincipal,  azurerm_resource_group.rg
+    module.ServicePrincipal, azurerm_resource_group.rg
   ]
 }
 
@@ -67,17 +67,17 @@ module "keyvault" {
 
 locals {
   secrets = {
-  spn-sc = module.ServicePrincipal.service_principal_password_value
-  github-token = var.github-token
-  ssh-pub-key = var.SSH_PUBLIC_KEY
-  ado-token = var.ado-token
+    spn-sc       = module.ServicePrincipal.service_principal_password_value
+    github-token = var.github-token
+    ssh-pub-key  = var.SSH_PUBLIC_KEY
+    ado-token    = var.ado-token
   }
 }
 
 resource "azurerm_key_vault_secret" "example" {
-  for_each            = local.secrets
-  name                = each.key
-  value               = each.value
+  for_each     = local.secrets
+  name         = each.key
+  value        = each.value
   key_vault_id = module.keyvault.keyvault_id
 
   depends_on = [
@@ -106,8 +106,8 @@ resource "azurerm_key_vault_access_policy" "kv_access_policy_sc" {
 # permission to my self
 resource "azurerm_key_vault_access_policy" "kv_access_policy_me" {
   key_vault_id       = module.keyvault.keyvault_id
-  tenant_id    = data.azurerm_client_config.current.tenant_id
-  object_id    = data.azurerm_client_config.current.object_id
+  tenant_id          = data.azurerm_client_config.current.tenant_id
+  object_id          = data.azurerm_client_config.current.object_id
   key_permissions    = ["Get", "List"]
   secret_permissions = ["Get", "Backup", "Delete", "List", "Purge", "Recover", "Restore", "Set"]
 
@@ -124,11 +124,11 @@ module "devops" {
   project_name             = var.project_name
   ado_github_id            = var.ado_github_id
   ado_pipeline_yaml_path_1 = var.ado_pipeline_yaml_path_1
-  github_pat           = var.github-token
-  service_principal_id = module.ServicePrincipal.service_principal_application_id
+  github_pat               = var.github-token
+  service_principal_id     = module.ServicePrincipal.service_principal_application_id
   service_principal_secret = module.ServicePrincipal.service_principal_password_value
-  spn_tenant_id = data.azurerm_client_config.current.tenant_id
-  subscription_name = data.azurerm_subscription.primary.display_name
+  spn_tenant_id            = data.azurerm_client_config.current.tenant_id
+  subscription_name        = data.azurerm_subscription.primary.display_name
 
   spn_subscription_id = data.azurerm_client_config.current.subscription_id
 
@@ -145,106 +145,106 @@ module "devops" {
 }
 
 
-module "vnet"{
-  source = "./modules/vnet"
-  AKS_VNET_NAME = var.AKS_VNET_NAME
-  LOCATION = azurerm_resource_group.rg["rg2"].location
-  RESOURCE_GROUP_NAME      = azurerm_resource_group.rg["rg2"].name
-  AKS_ADDRESS_SPACE = var.AKS_ADDRESS_SPACE
-  AKS_SUBNET_ADDRESS_PREFIX = var.AKS_SUBNET_ADDRESS_PREFIX
-  AKS_SUBNET_NAME = var.AKS_SUBNET_NAME
-  APPGW_SUBNET_NAME = var.APPGW_SUBNET_NAME
+module "vnet" {
+  source                      = "./modules/vnet"
+  AKS_VNET_NAME               = var.AKS_VNET_NAME
+  LOCATION                    = azurerm_resource_group.rg["rg2"].location
+  RESOURCE_GROUP_NAME         = azurerm_resource_group.rg["rg2"].name
+  AKS_ADDRESS_SPACE           = var.AKS_ADDRESS_SPACE
+  AKS_SUBNET_ADDRESS_PREFIX   = var.AKS_SUBNET_ADDRESS_PREFIX
+  AKS_SUBNET_NAME             = var.AKS_SUBNET_NAME
+  APPGW_SUBNET_NAME           = var.APPGW_SUBNET_NAME
   APPGW_SUBNET_ADDRESS_PREFIX = var.APPGW_SUBNET_ADDRESS_PREFIX
-  ACR_VNET_NAME = var.ACR_VNET_NAME
-  ACR_SUBNET_NAME = var.ACR_SUBNET_NAME
-  ACR_ADDRESS_SPACE = var.ACR_ADDRESS_SPACE
-  ACR_SUBNET_ADDRESS_PREFIX = var.ACR_SUBNET_ADDRESS_PREFIX
-  AGENT_VNET_NAME = var.AGENT_VNET_NAME
-  AGENT_ADDRESS_SPACE = var.AGENT_ADDRESS_SPACE
-  AGENT_SUBNET_NAME = var.AGENT_SUBNET_NAME
+  ACR_VNET_NAME               = var.ACR_VNET_NAME
+  ACR_SUBNET_NAME             = var.ACR_SUBNET_NAME
+  ACR_ADDRESS_SPACE           = var.ACR_ADDRESS_SPACE
+  ACR_SUBNET_ADDRESS_PREFIX   = var.ACR_SUBNET_ADDRESS_PREFIX
+  AGENT_VNET_NAME             = var.AGENT_VNET_NAME
+  AGENT_ADDRESS_SPACE         = var.AGENT_ADDRESS_SPACE
+  AGENT_SUBNET_NAME           = var.AGENT_SUBNET_NAME
   AGENT_SUBNET_ADDRESS_PREFIX = var.AGENT_SUBNET_ADDRESS_PREFIX
 
-  depends_on = [  azurerm_resource_group.rg ]
+  depends_on = [azurerm_resource_group.rg]
 }
 
-module "agent-vm"{
-  source = "./modules/agentvm"
-AGENT_VM_NAME = var.AGENT_VM_NAME
- LOCATION = azurerm_resource_group.rg["rg2"].location
- RESOURCE_GROUP_NAME  = azurerm_resource_group.rg["rg2"].name
- ADMIN_USERNAME  = var.ADMIN_USERNAME
- ADMIN_PASSWORD  = var.ADMIN_PASSWORD
- VM_SIZE = var.VM_SIZE
- AGENT_SUBNET_ID = module.vnet.agent_vnet_subnet_id
+module "agent-vm" {
+  source              = "./modules/agentvm"
+  AGENT_VM_NAME       = var.AGENT_VM_NAME
+  LOCATION            = azurerm_resource_group.rg["rg2"].location
+  RESOURCE_GROUP_NAME = azurerm_resource_group.rg["rg2"].name
+  ADMIN_USERNAME      = var.ADMIN_USERNAME
+  ADMIN_PASSWORD      = var.ADMIN_PASSWORD
+  VM_SIZE             = var.VM_SIZE
+  AGENT_SUBNET_ID     = module.vnet.agent_vnet_subnet_id
 
- depends_on = [
-    module.vnet,  azurerm_resource_group.rg
+  depends_on = [
+    module.vnet, azurerm_resource_group.rg
   ]
 }
 
-module "acr"{
-  source = "./modules/acr"
-PRIVATE_ACR_NAME = var.PRIVATE_ACR_NAME
-LOCATION = azurerm_resource_group.rg["rg2"].location
-RESOURCE_GROUP_NAME  = azurerm_resource_group.rg["rg2"].name
-SERVICE_PRINCIPAL_OBJECT_ID = module.ServicePrincipal.service_principal_object_id
-ACR_SKU = var.ACR_SKU
-AKS_VNET_ID = module.vnet.aks_vnet_id
-AGENT_VNET_ID = module.vnet.agent_vnet_id
-ACR_VNET_ID = module.vnet.acr_vnet_id
-AGENT_SUBNET_ID = module.vnet.agent_vnet_subnet_id
-ACR_SUBNET_ID = module.vnet.acr_subnet_id
+module "acr" {
+  source                      = "./modules/acr"
+  PRIVATE_ACR_NAME            = var.PRIVATE_ACR_NAME
+  LOCATION                    = azurerm_resource_group.rg["rg2"].location
+  RESOURCE_GROUP_NAME         = azurerm_resource_group.rg["rg2"].name
+  SERVICE_PRINCIPAL_OBJECT_ID = module.ServicePrincipal.service_principal_object_id
+  ACR_SKU                     = var.ACR_SKU
+  AKS_VNET_ID                 = module.vnet.aks_vnet_id
+  AGENT_VNET_ID               = module.vnet.agent_vnet_id
+  ACR_VNET_ID                 = module.vnet.acr_vnet_id
+  AGENT_SUBNET_ID             = module.vnet.agent_vnet_subnet_id
+  ACR_SUBNET_ID               = module.vnet.acr_subnet_id
 
-depends_on = [ module.ServicePrincipal, module.vnet,  azurerm_resource_group.rg ]
+  depends_on = [module.ServicePrincipal, module.vnet, azurerm_resource_group.rg]
 
 }
 
 module "sqldb" {
-  source = "./modules/sqldb"
-  AKS_SUBNET_ID = module.vnet.aks_subnet_id
+  source                      = "./modules/sqldb"
+  AKS_SUBNET_ID               = module.vnet.aks_subnet_id
   AKS_SUBNET_SERVICE_ENDPOINT = module.vnet.aks_subnet_service_endpoints
-  LOCATION = azurerm_resource_group.rg["rg2"].location
-  RESOURCE_GROUP_NAME  = azurerm_resource_group.rg["rg2"].name
-  COLLATION = var.COLLATION
-  DB_NAME = var.DB_NAME
-DBPASSWORD = var.DBPASSWORD
-DBSERVER_NAME = var.DBSERVER_NAME
-DBUSERNAME = var.DBUSERNAME
+  LOCATION                    = azurerm_resource_group.rg["rg2"].location
+  RESOURCE_GROUP_NAME         = azurerm_resource_group.rg["rg2"].name
+  COLLATION                   = var.COLLATION
+  DB_NAME                     = var.DB_NAME
+  DBPASSWORD                  = var.DBPASSWORD
+  DBSERVER_NAME               = var.DBSERVER_NAME
+  DBUSERNAME                  = var.DBUSERNAME
 
-depends_on = [
-   module.vnet,  azurerm_resource_group.rg
+  depends_on = [
+    module.vnet, azurerm_resource_group.rg
   ]
 
 }
 
-module "appgate"{
-  source = "./modules/appgate"
-LOCATION = azurerm_resource_group.rg["rg2"].location
-RESOURCE_GROUP_NAME  = azurerm_resource_group.rg["rg2"].name
-  APP_GATEWAY_NAME = var.APP_GATEWAY_NAME
+module "appgate" {
+  source               = "./modules/appgate"
+  LOCATION             = azurerm_resource_group.rg["rg2"].location
+  RESOURCE_GROUP_NAME  = azurerm_resource_group.rg["rg2"].name
+  APP_GATEWAY_NAME     = var.APP_GATEWAY_NAME
   VIRTUAL_NETWORK_NAME = var.VIRTUAL_NETWORK_NAME
   APPGW_PUBLIC_IP_NAME = var.APPGW_PUBLIC_IP_NAME
-  APPGW_SUBNET_ID = module.vnet.appgw_subnet_id
-  depends_on = [ module.vnet,  azurerm_resource_group.rg ]
+  APPGW_SUBNET_ID      = module.vnet.appgw_subnet_id
+  depends_on           = [module.vnet, azurerm_resource_group.rg]
 
 
 }
 
 module "log-analytics" {
-  source = "./modules/loga"
-  LOCATION = azurerm_resource_group.rg["rg2"].location
-RESOURCE_GROUP_NAME  = azurerm_resource_group.rg["rg2"].name
+  source              = "./modules/loga"
+  LOCATION            = azurerm_resource_group.rg["rg2"].location
+  RESOURCE_GROUP_NAME = azurerm_resource_group.rg["rg2"].name
 
-depends_on = [  azurerm_resource_group.rg ]
+  depends_on = [azurerm_resource_group.rg]
 }
 
 module "azure-fron-door" {
-  source = "./modules/afd"
-RESOURCE_GROUP_NAME  = azurerm_resource_group.rg["rg2"].name
-APPGWPUBLIC_IP_ADDRESS =  module.appgate.ip_address
+  source                 = "./modules/afd"
+  RESOURCE_GROUP_NAME    = azurerm_resource_group.rg["rg2"].name
+  APPGWPUBLIC_IP_ADDRESS = module.appgate.ip_address
 
-depends_on = [
-     module.appgate,  azurerm_resource_group.rg
+  depends_on = [
+    module.appgate, azurerm_resource_group.rg
   ]
 }
 # module "aks"{
@@ -260,27 +260,26 @@ depends_on = [
 
 # create Azure Kubernetes Service
 module "aks" {
-  source                 = "./modules/aks/"
-  SERVICE_PRINCIPLE_OBJECT_ID = module.ServicePrincipal.service_principal_object_id
-  NAME = var.ACR_NAME
-    LOCATION = azurerm_resource_group.rg["rg2"].location
-RESOURCE_GROUP_NAME  = azurerm_resource_group.rg["rg2"].name
-AKS_VNET_ID = module.vnet.aks_vnet_id
-ACR_VNET_ID = module.vnet.acr_vnet_id
-AGENT_VNET_ID = module.vnet.agent_vnet_id
-ACR_ID = module.acr.acr_id
-AKS_SUBNET_ID = module.vnet.aks_subnet_id
-APPGATEWAY_ID = module.appgate.appgw_id
-APPGW_SUBNET_ID = module.vnet.appgw_subnet_id
-CLIENT_ID = module.ServicePrincipal.client_id
-CLIENT_SECRET = module.ServicePrincipal.client_secret
-DNS_PREFIX = var.DNS_PREFIX
-rg_id = azurerm_resource_group.rg["rg2"].id
-ssh_public_key = var.SSH_PUBLIC_KEY
+  source                      = "./modules/aks/"
+  NAME                        = var.ACR_NAME
+  LOCATION                    = azurerm_resource_group.rg["rg2"].location
+  RESOURCE_GROUP_NAME         = azurerm_resource_group.rg["rg2"].name
+  AKS_VNET_ID                 = module.vnet.aks_vnet_id
+  ACR_VNET_ID                 = module.vnet.acr_vnet_id
+  AGENT_VNET_ID               = module.vnet.agent_vnet_id
+  ACR_ID                      = module.acr.acr_id
+  AKS_SUBNET_ID               = module.vnet.aks_subnet_id
+  APPGATEWAY_ID               = module.appgate.appgw_id
+  APPGW_SUBNET_ID             = module.vnet.appgw_subnet_id
+  CLIENT_ID                   = module.ServicePrincipal.client_id
+  CLIENT_SECRET               = module.ServicePrincipal.client_secret
+  DNS_PREFIX                  = var.DNS_PREFIX
+  rg_id                       = azurerm_resource_group.rg["rg2"].id
+  ssh_public_key              = var.SSH_PUBLIC_KEY
 
 
   depends_on = [
-    module.ServicePrincipal, module.acr, module.vnet, module.appgate,  azurerm_resource_group.rg
+    module.ServicePrincipal, module.acr, module.vnet, module.appgate, azurerm_resource_group.rg
   ]
 
 }

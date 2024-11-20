@@ -183,10 +183,6 @@ variable "APPGW_SUBNET_ID" {
 variable "ACR_ID" {
   type = string
 }
-
-variable "SERVICE_PRINCIPLE_OBJECT_ID" {
-  type = string
-}
 variable "AKS_VNET_ID" {
   type = string
 }

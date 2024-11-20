@@ -14,6 +14,7 @@ resource "azurerm_subnet" "aks-subnet" {
   service_endpoints = ["Microsoft.Sql"]
   depends_on = [ azurerm_virtual_network.aks-vnet ]
 }
+#service_endpoints ensurse secure connection , no public ip.
 
 resource "azurerm_subnet" "appgw-subnet" {
   name                 = var.APPGW_SUBNET_NAME
