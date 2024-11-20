@@ -183,18 +183,18 @@ variable "ACR_VNET_ID" {
 variable "AGENT_VNET_ID" {
   type = string
 }
-# variable "SSH_PUBLIC_KEY" {
-#   type = string
+variable "ssh_public_key" {
+  type = string
   
-# }
+}
 variable "rg_id" {
   type = string
 }
 variable "AKS_SUBNET_ID" {
   type = string
 }
-variable "ssh_public_key" {
-  type = string
-  default = "~/.ssh/id_rsa.pub"
+# variable "ssh_public_key" {
+#   type = string
+#   default = "~/.ssh/id_rsa.pub"
   
-}
+# }

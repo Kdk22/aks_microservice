@@ -260,20 +260,20 @@ module "azure-fron-door" {
 
 # create Azure Kubernetes Service
 module "aks" {
-  source                      = "./modules/aks/"
-  NAME                        = var.ACR_NAME
-  LOCATION                    = azurerm_resource_group.rg["rg2"].location
-  RESOURCE_GROUP_NAME         = azurerm_resource_group.rg["rg2"].name
-  AKS_VNET_ID                 = module.vnet.aks_vnet_id
-  ACR_VNET_ID                 = module.vnet.acr_vnet_id
-  AGENT_VNET_ID               = module.vnet.agent_vnet_id
-  ACR_ID                      = module.acr.acr_id
-  AKS_SUBNET_ID               = module.vnet.aks_subnet_id
-  APPGATEWAY_ID               = module.appgate.appgw_id
-  APPGW_SUBNET_ID             = module.vnet.appgw_subnet_id
-  DNS_PREFIX                  = var.DNS_PREFIX
-  rg_id                       = azurerm_resource_group.rg["rg2"].id
-  ssh_public_key              = var.SSH_PUBLIC_KEY
+  source              = "./modules/aks/"
+  NAME                = var.ACR_NAME
+  LOCATION            = azurerm_resource_group.rg["rg2"].location
+  RESOURCE_GROUP_NAME = azurerm_resource_group.rg["rg2"].name
+  AKS_VNET_ID         = module.vnet.aks_vnet_id
+  ACR_VNET_ID         = module.vnet.acr_vnet_id
+  AGENT_VNET_ID       = module.vnet.agent_vnet_id
+  ACR_ID              = module.acr.acr_id
+  AKS_SUBNET_ID       = module.vnet.aks_subnet_id
+  APPGATEWAY_ID       = module.appgate.appgw_id
+  APPGW_SUBNET_ID     = module.vnet.appgw_subnet_id
+  DNS_PREFIX          = var.DNS_PREFIX
+  rg_id               = azurerm_resource_group.rg["rg2"].id
+  ssh_public_key      = var.SSH_PUBLIC_KEY
 
 
   depends_on = [

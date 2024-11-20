@@ -82,8 +82,6 @@ variable "project_name" {
 variable "ado-token" {
   type        = string
   description = "Azure Devops Token"
-  default     = "blank"
-
 }
 
 # vnet variables 
