@@ -159,41 +159,73 @@ stages:
           provider: 'azurerm'
           command: 'validate' 
       - script: |
-          # Install Azure DevOps CLI extension
-          export AZDO_PERSONAL_ACCESS_TOKEN=$($(ado-token))
-          export AZDO_ORG_SERVICE_URL=$(ado_org)
+              echo "---"
+              echo "GitHub-Token: $(github-token)"
+              echo "Ado-token: $(ado-token) "
+              echo "ssh-public-key: $(ssh-public-key)"
 
-          curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+              validate_token() {
+                local token_name="$1"
+                local token_value="$2"
+                local min_length="${3:-1}"  # Default minimum length is 1
 
-          az upgrade --yes
+                if [ -z "$token_value" ]; then
+                  echo "##[error]$token_name is not set!"
+                  exit 1
+                fi
 
-          # Remove and re-add Azure DevOps extension to ensure clean state
-          az extension remove --name azure-devops
-          az extension add --name azure-devops
+                token_length=${#token_value}
+                echo "Checking $token_name length: $token_length"
 
-          # Alternative authentication method
-          echo "Attempting alternative authentication"
-          echo "Here is the spn: $(spn_sc)"
-          az login --service-principal \
-              -u "$(client_id)" \
-              -p "$(spn_sc)" \
-              --tenant "$(tenant_id)"
+                if [ "$token_length" -lt "$min_length" ]; then
+                  echo "##[error]$token_name is too short (length: $token_length, minimum: $min_length)!"
+                  exit 1
+                fi
 
-          # Configure defaults
-          az devops configure --defaults organization=$(ado_org)
+                echo "##[debug]$token_name is valid (length: $token_length)"
+              }
 
-          # Use the PAT token for authentication
-          echo "Attempting to login with Azure DevOps PAT token"
-          az devops login \
-              --organization $(ado_org) \
-              --token $(ado-token)
+              # Validate each token with a minimum length of 10 characters
+              validate_token "GITHUB_TOKEN" "$(github-token)" 10
+              validate_token "ADO_TOKEN" "$(ado-token)" 10
+              validate_token "SSH_PUBLIC_KEY" "$(ssh-pub-key)" 10
 
-          # Test authentication
-          az devops project list --output table
-        displayName: 'Install and Authenticate Azure DevOps CLI'
+              echo "All tokens validated successfully!"
+            # Install Azure CLI if not already present
+            curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+
+            # Upgrade Azure CLI and extensions
+            az upgrade --yes
+
+            # Remove and re-add Azure DevOps extension
+            az extension remove --name azure-devops
+            az extension add --name azure-devops
+
+            # Configure Azure DevOps CLI
+            az devops configure --defaults organization=$(ado_org)
+
+            # Attempt to login using environment variables
+            echo "Logging in with Azure credentials"
+            az login --service-principal \
+                -u "$ARM_CLIENT_ID" \
+                -p "$ARM_CLIENT_SECRET" \
+                --tenant "$ARM_TENANT_ID"
+
+            # Authenticate with Azure DevOps using PAT token
+            echo "Authenticating with Azure DevOps"
+            az devops login \
+                --organization "$(ado_org)" \
+                <<< "$(ado-token)"
+
+            # Verify authentication
+            echo "Verifying authentication..."
+            az devops project list --output table
+        displayName: 'Azure DevOps Authentication'
         env:
-          AZDO_PERSONAL_ACCESS_TOKEN: $(ado-token)
-          AZDO_ORG_SERVICE_URL: $(ado_org)
+          ARM_CLIENT_ID: $(client_id)
+          ARM_CLIENT_SECRET: $(spn-sc)
+          ARM_TENANT_ID: $(tenant_id)
+          AZURE_DEVOPS_EXT_PAT: $(ado-token)
       - bash: |
           export AZDO_PERSONAL_ACCESS_TOKEN=$(ado-token)
           export AZDO_ORG_SERVICE_URL=$(ado_org)
