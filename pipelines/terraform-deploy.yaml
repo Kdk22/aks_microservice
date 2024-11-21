@@ -93,6 +93,10 @@ stages:
 
               echo "All tokens validated successfully!"
           displayName: 'Verify Secrets'
+        -env:
+          ado_token: $(ado-token)
+          spn_sc: $(spn-sc)
+
         - bash: |
             export AZDO_PERSONAL_ACCESS_TOKEN=$(ado-token)
             export AZDO_ORG_SERVICE_URL=$(ado_org)
@@ -169,9 +173,10 @@ stages:
 
           # Alternative authentication method
           echo "Attempting alternative authentication"
+          echo "Here is the spn: $(spn_sc)"
           az login --service-principal \
               -u "$(client_id)" \
-              -p "$(spn-sc)" \
+              -p "$(spn_sc)" \
               --tenant "$(tenant_id)"
 
           # Configure defaults
