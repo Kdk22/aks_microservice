@@ -141,7 +141,14 @@ stages:
         displayName: 'validate'
         inputs:
           provider: 'azurerm'
-          command: 'validate' 
+          command: 'validate'
+        env:
+            AZDO_PERSONAL_ACCESS_TOKEN: $(ado-token)
+            AZURE_DEVOPS_EXT_PAT: $(ado-token)
+            AZDO_ORG_SERVICE_URL: $(ado_org)
+            TF_VAR_ado_token: $(ado-token)
+            TF_VAR_ado_org_service_url: $(ado_org)
+            AZDO_GITHUB_SERVICE_CONNECTION_PAT: $(github-token)
 
   # if the validate succeds we plan and apply 
   # and in plan stage i have set multiple checkpoints becuase i have set apply to auto approve 
@@ -186,6 +193,13 @@ stages:
             commandOptions: '-input=false -var-file="terraform.tfvars" -var="github_token=$(github-token)" -var="ado_token=$(ado-token)" -var="ssh_public_key=$(ssh-pub-key)"'
             environmentServiceNameAzureRM: $(serviceconnection)
             workingDirectory: '$(working_directory)'
+          env:
+            AZDO_PERSONAL_ACCESS_TOKEN: $(ado-token)
+            AZURE_DEVOPS_EXT_PAT: $(ado-token)
+            AZDO_ORG_SERVICE_URL: $(ado_org)
+            TF_VAR_ado_token: $(ado-token)
+            TF_VAR_ado_org_service_url: $(ado_org)
+            AZDO_GITHUB_SERVICE_CONNECTION_PAT: $(github-token)
 
   #Checkov to scan the execution plan for vulnerabilities and exposed outputs
         - task: Bash@3
@@ -256,10 +270,13 @@ stages:
             backendAzureRmContainerName: $(backend_container)
             backendAzureRmKey: $(backendkey_tfstate)
             workingDirectory: '$(working_directory)'
-        - bash: |
-            export AZDO_PERSONAL_ACCESS_TOKEN: $(ado-token)
-            export AZDO_ORG_SERVICE_URL: $(ado_org)
-            export AZDO_GITHUB_SERVICE_CONNECTION_PAT: $(github-token)
+          env:
+            AZDO_PERSONAL_ACCESS_TOKEN: $(ado-token)
+            AZURE_DEVOPS_EXT_PAT: $(ado-token)
+            AZDO_ORG_SERVICE_URL: $(ado_org)
+            TF_VAR_ado_token: $(ado-token)
+            TF_VAR_ado_org_service_url: $(ado_org)
+            AZDO_GITHUB_SERVICE_CONNECTION_PAT: $(github-token)
 
         - task: Bash@3
           inputs:
@@ -275,6 +292,13 @@ stages:
             commandOptions: '-input=false -var-file="terraform.tfvars" -var="github_token=$(github-token)" -var="ado_token=$(ado-token)" -var="ssh_public_key=$(ssh-pub-key)"'
             environmentServiceNameAzureRM: $(serviceconnection)
             workingDirectory: '$(working_directory)'
+          env:
+            AZDO_PERSONAL_ACCESS_TOKEN: $(ado-token)
+            AZURE_DEVOPS_EXT_PAT: $(ado-token)
+            AZDO_ORG_SERVICE_URL: $(ado_org)
+            TF_VAR_ado_token: $(ado-token)
+            TF_VAR_ado_org_service_url: $(ado_org)
+            AZDO_GITHUB_SERVICE_CONNECTION_PAT: $(github-token)
 
         - task: TerraformTaskV2@2
           displayName: 'apply'
@@ -284,3 +308,10 @@ stages:
             commandOptions: '-input=false -auto-approve -var-file="terraform.tfvars" -var="github_token=$(github-token)" -var="ado_token=$(ado-token)" -var="ssh_public_key=$(ssh-pub-key)"'
             environmentServiceNameAzureRM: $(serviceconnection)
             workingDirectory: '$(working_directory)'
+          env:
+            AZDO_PERSONAL_ACCESS_TOKEN: $(ado-token)
+            AZURE_DEVOPS_EXT_PAT: $(ado-token)
+            AZDO_ORG_SERVICE_URL: $(ado_org)
+            TF_VAR_ado_token: $(ado-token)
+            TF_VAR_ado_org_service_url: $(ado_org)
+            AZDO_GITHUB_SERVICE_CONNECTION_PAT: $(github-token)
