@@ -312,6 +312,8 @@ stages:
 
 
         - task: TerraformTaskV2@2
+          env:
+            AZURE_DEVOPS_EXT_PAT: $(System.AccessToken)
           displayName: plan
           inputs:
             provider: 'azurerm'
