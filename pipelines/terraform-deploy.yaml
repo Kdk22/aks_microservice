@@ -112,77 +112,79 @@ stages:
           command: 'validate'
 
   - stage: KeyVaultAccess
-      jobs:
-        - job: GetSecrets
-          continueOnError: false
-          steps:
-          - task: AzureKeyVault@2
-            inputs:
-              azureSubscription: '$(serviceconnection)'
-              KeyVaultName: 'aks-proj-kv'
-              SecretsFilter: '*'
-              RunAsPreJob: true
-            displayName: 'Azure Key Vault'
+    displayName: "Access Key Vault"
+    jobs:
+      - job: GetSecrets
+        continueOnError: false
+        steps:
+        - task: AzureKeyVault@2
+          inputs:
+            azureSubscription: '$(serviceconnection)'
+            KeyVaultName: 'aks-proj-kv'
+            SecretsFilter: '*'
+            RunAsPreJob: true
+          runASPreJob: true
+          displayName: 'Azure Key Vault'
 
-          - task: PowerShell@2
-            name: SetPipelineVariables
-            inputs:
-              targetType: 'inline'
-              script: |
-                # Set pipeline variables
-                Write-Host "##vso[task.setvariable variable=github_token;isOutput=true]$(github-token)"
-                Write-Host "##vso[task.setvariable variable=ado_pat;isOutput=true]$(ado-token)"
-                Write-Host "##vso[task.setvariable variable=ssh_pub_key;isOutput=true]$(ssh-pub-key)"
-                Write-Host "##vso[task.setvariable variable=spn_sc;isOutput=true]$(spn-sc)"
-            displayName: 'Set Pipeline Variables'
+        - task: PowerShell@2
+          name: SetPipelineVariables
+          inputs:
+            targetType: 'inline'
+            script: |
+              # Set pipeline variables
+              Write-Host "##vso[task.setvariable variable=github_token;isOutput=true]$(github-token)"
+              Write-Host "##vso[task.setvariable variable=ado_pat;isOutput=true]$(ado-token)"
+              Write-Host "##vso[task.setvariable variable=ssh_pub_key;isOutput=true]$(ssh-pub-key)"
+              Write-Host "##vso[task.setvariable variable=spn_sc;isOutput=true]$(spn-sc)"
+          displayName: 'Set Pipeline Variables'
 
-          
-          # Verification task
-          - task: Bash@3
-            inputs:
-              targetType: 'inline'
-              script: |
-                echo "---"
-                echo "GitHub-Token: $(github-token)"
-                echo "Ado-token: $(ado-token) "
-                echo "ssh-public-key: $(ssh-public-key)"
+        
+        # Verification task
+        - task: Bash@3
+          inputs:
+            targetType: 'inline'
+            script: |
+              echo "---"
+              echo "GitHub-Token: $(github-token)"
+              echo "Ado-token: $(ado-token) "
+              echo "ssh-public-key: $(ssh-public-key)"
 
-                validate_token() {
-                  local token_name="$1"
-                  local token_value="$2"
-                  local min_length="${3:-1}"  # Default minimum length is 1
+              validate_token() {
+                local token_name="$1"
+                local token_value="$2"
+                local min_length="${3:-1}"  # Default minimum length is 1
 
-                  if [ -z "$token_value" ]; then
-                    echo "##[error]$token_name is not set!"
-                    exit 1
-                  fi
+                if [ -z "$token_value" ]; then
+                  echo "##[error]$token_name is not set!"
+                  exit 1
+                fi
 
-                  token_length=${#token_value}
-                  echo "Checking $token_name length: $token_length"
+                token_length=${#token_value}
+                echo "Checking $token_name length: $token_length"
 
-                  if [ "$token_length" -lt "$min_length" ]; then
-                    echo "##[error]$token_name is too short (length: $token_length, minimum: $min_length)!"
-                    exit 1
-                  fi
+                if [ "$token_length" -lt "$min_length" ]; then
+                  echo "##[error]$token_name is too short (length: $token_length, minimum: $min_length)!"
+                  exit 1
+                fi
 
-                  echo "##[debug]$token_name is valid (length: $token_length)"
-                }
+                echo "##[debug]$token_name is valid (length: $token_length)"
+              }
 
-                # Validate each token with a minimum length of 10 characters
-                validate_token "GITHUB_TOKEN" "$(github_token)" 10
-                validate_token "ADO_TOKEN" "$(ado_pat)" 10
-                validate_token "SSH_PUBLIC_KEY" "$(ssh_pub_key)" 10
+              # Validate each token with a minimum length of 10 characters
+              validate_token "GITHUB_TOKEN" "$(github_token)" 10
+              validate_token "ADO_TOKEN" "$(ado_pat)" 10
+              validate_token "SSH_PUBLIC_KEY" "$(ssh_pub_key)" 10
 
-                echo "All tokens validated successfully!"
-            displayName: 'Verify Secrets'
-            env:
-              ado_pat: $(ado-token)
-              spn_sc: $(spn-sc)
-              ssh_pub_key: $(ssh-pub-key)
-              github_token: $(github-token)
-          - bash: |
-              export AZDO_PERSONAL_ACCESS_TOKEN=$(ado-token)
-              export AZDO_ORG_SERVICE_URL=$(ado_org)
+              echo "All tokens validated successfully!"
+          displayName: 'Verify Secrets'
+          env:
+            ado_pat: $(ado-token)
+            spn_sc: $(spn-sc)
+            ssh_pub_key: $(ssh-pub-key)
+            github_token: $(github-token)
+        - bash: |
+            export AZDO_PERSONAL_ACCESS_TOKEN=$(ado-token)
+            export AZDO_ORG_SERVICE_URL=$(ado_org)
 
 
   # if the validate succeds we plan and apply 
