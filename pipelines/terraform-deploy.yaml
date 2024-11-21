@@ -158,10 +158,20 @@ stages:
           # Install Azure DevOps CLI extension
           export AZDO_PERSONAL_ACCESS_TOKEN=$($(ado-token))
           export AZDO_ORG_SERVICE_URL=$(ado_org)
+          az upgrade --yes
+
+          # Remove and re-add Azure DevOps extension to ensure clean state
+          az extension remove --name azure-devops
           az extension add --name azure-devops
 
           # Configure defaults
           az devops configure --defaults organization=$(ado_org)
+
+          # Use the PAT token for authentication
+          echo "Attempting to login with Azure DevOps PAT token"
+          az devops login \
+              --organization $(ado_org) \
+              --token $(ado-token)
 
           # Test authentication
           az devops project list --output table
