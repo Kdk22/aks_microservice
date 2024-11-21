@@ -115,6 +115,7 @@ resource "azurerm_key_vault_access_policy" "kv_access_policy_me" {
 }
 
 provider "azuredevops" {
+  org_service_url       = "https://dev.azure.com/utft0"
 }
 
 module "devops" {
