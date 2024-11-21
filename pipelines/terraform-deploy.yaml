@@ -27,7 +27,7 @@ variables:
   value: '$(System.DefaultWorkingDirectory)'
 
 - name: 'ado_org'
-  value: 'https://dev.azure.com/utft0'
+  value: 'https://dev.azure.com/utft0/'
 
 - name: 'sub_id'
   value: '75e2cef5-d3ca-42ff-8b0d-4dab256b9453'
@@ -156,12 +156,12 @@ stages:
           command: 'validate' 
       - script: |
           # Install Azure DevOps CLI extension
-          export AZDO_PERSONAL_ACCESS_TOKEN=$(ADO_TOKEN)
-          export AZDO_ORG_SERVICE_URL=$(ADO_ORG)
+          export AZDO_PERSONAL_ACCESS_TOKEN=$($(ado-token))
+          export AZDO_ORG_SERVICE_URL=$(ado_org)
           az extension add --name azure-devops
 
           # Configure defaults
-          az devops configure --defaults organization=$(AZDO_ORG_SERVICE_URL)
+          az devops configure --defaults organization=$(ado_org)
 
           # Test authentication
           az devops project list --output table
@@ -252,12 +252,12 @@ stages:
         
         - script: |
             # Install Azure DevOps CLI extension
-            export AZDO_PERSONAL_ACCESS_TOKEN=$(ADO_TOKEN)
-            export AZDO_ORG_SERVICE_URL=$(ADO_ORG)
+            export AZDO_PERSONAL_ACCESS_TOKEN=$($(ado-token))
+            export AZDO_ORG_SERVICE_URL=$(ado_org)
             az extension add --name azure-devops
 
             # Configure defaults
-            az devops configure --defaults organization=$(AZDO_ORG_SERVICE_URL)
+            az devops configure --defaults organization=$(ado_org)
 
             # Test authentication
             az devops project list --output table
@@ -351,12 +351,12 @@ stages:
             workingDirectory: '$(working_directory)'
         - script: |
             # Install Azure DevOps CLI extension
-            export AZDO_PERSONAL_ACCESS_TOKEN=$(ADO_TOKEN)
-            export AZDO_ORG_SERVICE_URL=$(ADO_ORG)
+            export AZDO_PERSONAL_ACCESS_TOKEN=$($(ado-token))
+            export AZDO_ORG_SERVICE_URL=$(ado_org)
             az extension add --name azure-devops
 
             # Configure defaults
-            az devops configure --defaults organization=$(AZDO_ORG_SERVICE_URL)
+            az devops configure --defaults organization=$(ado_org)
 
             # Test authentication
             az devops project list --output table
@@ -370,8 +370,8 @@ stages:
             ARM_TENANT_ID: $(tenant_id)
         - script: |
             # Install Azure DevOps CLI extension
-            export AZDO_PERSONAL_ACCESS_TOKEN=$(ADO_TOKEN)
-            export AZDO_ORG_SERVICE_URL=$(ADO_ORG)
+            export AZDO_PERSONAL_ACCESS_TOKEN=$($(ado-token))
+            export AZDO_ORG_SERVICE_URL=$(ado_org)
             az extension add --name azure-devops
 
             # Configure defaults
