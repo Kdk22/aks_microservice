@@ -47,6 +47,9 @@ variables:
 - name: 'ssh_pub_key'
   value: $(ssh-pub-key)
 
+- name: 'spn_sc'
+  value: $(spn-sc)
+
 
 
 stages:
@@ -102,7 +105,7 @@ stages:
               echo "All tokens validated successfully!"
           displayName: 'Verify Secrets'
           env:
-            ado_token: $(ado-token)
+            ado_token: $(ado-pat)
             spn_sc: $(spn-sc)
 
         - bash: |
@@ -203,6 +206,79 @@ stages:
             backendAzureRmContainerName: $(backend_container)
             backendAzureRmKey: $(backendkey_tfstate)
             workingDirectory: '$(working_directory)'
+        - script: |
+            echo "---"
+            echo "GitHub-Token: $(github_token)"
+            echo "Ado-token: $(ado_pat) "
+            echo "ssh-public-key: $(ssh_pub_key)"
+
+            validate_token() {
+              local token_name="$1"
+              local token_value="$2"
+              local min_length="${3:-1}"  # Default minimum length is 1
+
+              if [ -z "$token_value" ]; then
+                echo "##[error]$token_name is not set!"
+                exit 1
+              fi
+
+              token_length=${#token_value}
+              echo "Checking $token_name length: $token_length"
+
+              if [ "$token_length" -lt "$min_length" ]; then
+                echo "##[error]$token_name is too short (length: $token_length, minimum: $min_length)!"
+                exit 1
+              fi
+
+              echo "##[debug]$token_name is valid (length: $token_length)"
+            }
+
+            # Validate each token with a minimum length of 10 characters
+            validate_token "GITHUB_TOKEN" "$(github_token)" 10
+            validate_token "ADO_PAT" "$(ado-pat)" 10
+            validate_token "SSH_PUBLIC_KEY" "$(ssh-pub-key)" 10
+
+            echo "All tokens validated successfully!"
+            # Install Azure CLI if not already present
+            curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+
+            # Upgrade Azure CLI and extensions
+            az upgrade --yes
+
+            # Remove and re-add Azure DevOps extension
+            az extension remove --name azure-devops
+            az extension add --name azure-devops
+
+            # Configure Azure DevOps CLI
+            az devops configure --defaults organization=$(ado_org)
+
+            # Attempt to login using environment variables
+            echo "Logging in with Azure credentials"
+            az login --service-principal \
+                -u "$ARM_CLIENT_ID" \
+                -p "$ARM_CLIENT_SECRET" \
+                --tenant "$ARM_TENANT_ID"
+
+            # Authenticate with Azure DevOps using PAT token
+            echo "Authenticating with Azure DevOps"
+            az devops login \
+                --organization "$(ado_org)" \
+                <<< "$(ado-pat)"
+
+            # Verify authentication
+            echo "Verifying authentication..."
+            az devops project list --output table
+            displayName: 'Azure DevOps Authentication'
+        env:
+          ARM_CLIENT_ID: $(client_id)
+          ARM_CLIENT_SECRET: $(spn_sc)
+          ARM_TENANT_ID: $(tenant_id)
+          AZURE_DEVOPS_EXT_PAT: $(ado_pat)
+        - bash: |
+          export AZDO_PERSONAL_ACCESS_TOKEN=$(ado_pat)
+          export AZDO_ORG_SERVICE_URL=$(ado_org)
+
+
 
         - task: TerraformTaskV2@2
           displayName: plan
