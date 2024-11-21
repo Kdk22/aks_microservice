@@ -53,67 +53,6 @@ variables:
 
 
 stages:
-  - stage: KeyVaultAccess
-    jobs:
-      - job: GetSecrets
-        steps:
-        - task: AzureKeyVault@2
-          inputs:
-            azureSubscription: '$(serviceconnection)'
-            KeyVaultName: 'aks-proj-kv'
-            SecretsFilter: '*'
-            RunAsPreJob: true
-          displayName: 'Azure Key Vault'
-
-        
-        # Verification task
-        - task: Bash@3
-          inputs:
-            targetType: 'inline'
-            script: |
-              echo "---"
-              echo "GitHub-Token: $(github-token)"
-              echo "Ado-token: $(ado-token) "
-              echo "ssh-public-key: $(ssh-public-key)"
-
-              validate_token() {
-                local token_name="$1"
-                local token_value="$2"
-                local min_length="${3:-1}"  # Default minimum length is 1
-
-                if [ -z "$token_value" ]; then
-                  echo "##[error]$token_name is not set!"
-                  exit 1
-                fi
-
-                token_length=${#token_value}
-                echo "Checking $token_name length: $token_length"
-
-                if [ "$token_length" -lt "$min_length" ]; then
-                  echo "##[error]$token_name is too short (length: $token_length, minimum: $min_length)!"
-                  exit 1
-                fi
-
-                echo "##[debug]$token_name is valid (length: $token_length)"
-              }
-
-              # Validate each token with a minimum length of 10 characters
-              validate_token "GITHUB_TOKEN" "$(github-token)" 10
-              validate_token "ADO_TOKEN" "$(ado-token)" 10
-              validate_token "SSH_PUBLIC_KEY" "$(ssh-pub-key)" 10
-
-              echo "All tokens validated successfully!"
-          displayName: 'Verify Secrets'
-          env:
-            ado_pat: $(ado-token)
-            spn_sc: $(spn-sc)
-            ssh_pub_key: $(ssh-pub-key)
-            github_token: $(github-token)
-
-        - bash: |
-            export AZDO_PERSONAL_ACCESS_TOKEN=$(ado_pat)
-            export AZDO_ORG_SERVICE_URL=$(ado_org)
-
   - stage: "runCheckov"
     displayName: "Checkov: Static Code Analysis"
     jobs:
@@ -176,6 +115,67 @@ stages:
   # if the validate succeds we plan and apply 
   # and in plan stage i have set multiple checkpoints becuase i have set apply to auto approve 
   
+  - stage: KeyVaultAccess
+    displayName: 'Verify Secrets'
+    jobs:
+      - job: GetSecrets
+        steps:
+        - task: AzureKeyVault@2
+          inputs:
+            azureSubscription: '$(serviceconnection)'
+            KeyVaultName: 'aks-proj-kv'
+            SecretsFilter: '*'
+            RunAsPreJob: true
+          displayName: 'Azure Key Vault'
+
+        
+        # Verification task
+        - task: Bash@3
+          inputs:
+            targetType: 'inline'
+            script: |
+              echo "---"
+              echo "GitHub-Token: $(github-token)"
+              echo "Ado-token: $(ado-token) "
+              echo "ssh-public-key: $(ssh-public-key)"
+
+              validate_token() {
+                local token_name="$1"
+                local token_value="$2"
+                local min_length="${3:-1}"  # Default minimum length is 1
+
+                if [ -z "$token_value" ]; then
+                  echo "##[error]$token_name is not set!"
+                  exit 1
+                fi
+
+                token_length=${#token_value}
+                echo "Checking $token_name length: $token_length"
+
+                if [ "$token_length" -lt "$min_length" ]; then
+                  echo "##[error]$token_name is too short (length: $token_length, minimum: $min_length)!"
+                  exit 1
+                fi
+
+                echo "##[debug]$token_name is valid (length: $token_length)"
+              }
+
+              # Validate each token with a minimum length of 10 characters
+              validate_token "GITHUB_TOKEN" "$(github-token)" 10
+              validate_token "ADO_TOKEN" "$(ado-token)" 10
+              validate_token "SSH_PUBLIC_KEY" "$(ssh-pub-key)" 10
+
+              echo "All tokens validated successfully!"
+          env:
+            ado_pat: $(ado-token)
+            spn_sc: $(spn-sc)
+            ssh_pub_key: $(ssh-pub-key)
+            github_token: $(github-token)
+
+        - bash: |
+            export AZDO_PERSONAL_ACCESS_TOKEN=$(ado_pat)
+            export AZDO_ORG_SERVICE_URL=$(ado_org)
+
   - stage: Plan_Apply_dev
     dependsOn: [validate]
     condition: succeeded('validate')
