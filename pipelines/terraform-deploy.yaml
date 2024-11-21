@@ -123,7 +123,7 @@ stages:
             KeyVaultName: 'aks-proj-kv'
             SecretsFilter: '*'
             RunAsPreJob: true
-          runASPreJob: true
+          runAsPreJob: true
           displayName: 'Azure Key Vault'
 
         - task: PowerShell@2
