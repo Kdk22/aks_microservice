@@ -113,11 +113,21 @@ stages:
 
 
   # if the validate succeds we plan and apply 
-  # and in plan stage i have set multiple checkpoints becuase i have set apply to auto approve 
-  
-  - stage: KeyVaultAccess
-    displayName: 'Verify Secrets'
+  # and in plan stage i have set multiple checkpoints becuase i have set apply to auto approve  
+
+  - stage: Plan_Apply_dev
+    dependsOn: [validate]
+    condition: succeeded('validate')
+    displayName: Plan_Apply_dev
     jobs:
+      - deployment: 'Approval_Apply_Stage'
+        displayName: 'Approval gate for this stage'
+        environment: 'dev'
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+              - checkout: self
       - job: GetSecrets
         steps:
         - task: AzureKeyVault@2
@@ -176,19 +186,6 @@ stages:
             export AZDO_PERSONAL_ACCESS_TOKEN=$(ado_pat)
             export AZDO_ORG_SERVICE_URL=$(ado_org)
 
-  - stage: Plan_Apply_dev
-    dependsOn: [validate]
-    condition: succeeded('validate')
-    displayName: Plan_Apply_dev
-    jobs:
-      - deployment: 'Approval_Apply_Stage'
-        displayName: 'Approval gate for this stage'
-        environment: 'dev'
-        strategy:
-          runOnce:
-            deploy:
-              steps:
-              - checkout: self
       - job: plan
         displayName: 'Terraform_plan_dev'
         continueOnError: false
