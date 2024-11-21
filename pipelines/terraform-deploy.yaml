@@ -93,9 +93,9 @@ stages:
 
               echo "All tokens validated successfully!"
           displayName: 'Verify Secrets'
-        -env:
-          ado_token: $(ado-token)
-          spn_sc: $(spn-sc)
+          env:
+            ado_token: $(ado-token)
+            spn_sc: $(spn-sc)
 
         - bash: |
             export AZDO_PERSONAL_ACCESS_TOKEN=$(ado-token)
