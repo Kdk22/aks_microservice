@@ -72,9 +72,9 @@ stages:
             targetType: 'inline'
             script: |
               echo "---"
-              echo "GitHub-Token: $(github_token)"
-              echo "Ado-token: $(ado_pat) "
-              echo "ssh-public-key: $(ssh_public_key)"
+              echo "GitHub-Token: $(github-token)"
+              echo "Ado-token: $(ado-token) "
+              echo "ssh-public-key: $(ssh-public-key)"
 
               validate_token() {
                 local token_name="$1"
@@ -98,15 +98,17 @@ stages:
               }
 
               # Validate each token with a minimum length of 10 characters
-              validate_token "GITHUB_TOKEN" "$(github_token)" 10
-              validate_token "ADO_TOKEN" "$(ado_token)" 10
-              validate_token "SSH_PUBLIC_KEY" "$(ssh_pub_key)" 10
+              validate_token "GITHUB_TOKEN" "$(github-token)" 10
+              validate_token "ADO_TOKEN" "$(ado-token)" 10
+              validate_token "SSH_PUBLIC_KEY" "$(ssh-pub-key)" 10
 
               echo "All tokens validated successfully!"
           displayName: 'Verify Secrets'
           env:
-            ado_token: $(ado_pat)
-            spn_sc: $(spn_sc)
+            ado_pat: $(ado-token)
+            spn_sc: $(spn-sc)
+            ssh_pub_key: $(ssh-pub-key)
+            github_token: $(github-token)
 
         - bash: |
             export AZDO_PERSONAL_ACCESS_TOKEN=$(ado_pat)
