@@ -299,7 +299,6 @@ stages:
             az devops project list --output table
           displayName: 'Azure DevOps Authentication'
           env:
-          env:
             # Set these environment variables for the Azure DevOps provider
             AZDO_PERSONAL_ACCESS_TOKEN: $(ado_pat)
             AZDO_ORG_SERVICE_URL: $(ado_org)
