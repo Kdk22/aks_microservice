@@ -84,6 +84,9 @@ stages:
 
               echo "All tokens validated successfully!"
           displayName: 'Verify Secrets'
+        - bash: |
+            export AZDO_PERSONAL_ACCESS_TOKEN=$(ado-token)
+            export AZDO_ORG_SERVICE_URL=$(ado_org)
 
   - stage: "runCheckov"
     displayName: "Checkov: Static Code Analysis"
@@ -142,6 +145,10 @@ stages:
         inputs:
           provider: 'azurerm'
           command: 'validate' 
+      - bash: |
+          export AZDO_PERSONAL_ACCESS_TOKEN=$(ado-token)
+          export AZDO_ORG_SERVICE_URL=$(ado_org)
+
 
   # if the validate succeds we plan and apply 
   # and in plan stage i have set multiple checkpoints becuase i have set apply to auto approve 
@@ -178,13 +185,10 @@ stages:
             backendAzureRmContainerName: $(backend_container)
             backendAzureRmKey: $(backendkey_tfstate)
             workingDirectory: '$(working_directory)'
-          env:
-            AZDO_PERSONAL_ACCESS_TOKEN: $(ado-token)
-            AZDO_ORG_SERVICE_URL: $(ado_org)
-            AZDO_GITHUB_SERVICE_CONNECTION_PAT: $(github-token)
-            TF_VAR_ado_token: $(ado-token)
-            TF_VAR_ado_org_service_url: $(ado_org)
-            
+        - bash: |
+            export AZDO_PERSONAL_ACCESS_TOKEN=$(ado-token)
+            export AZDO_ORG_SERVICE_URL=$(ado_org)
+
         - task: TerraformTaskV2@2
           displayName: plan
           inputs:
@@ -193,12 +197,9 @@ stages:
             commandOptions: '-input=false -var-file="terraform.tfvars" -var="github_token=$(github-token)" -var="ado_token=$(ado-token)" -var="ssh_public_key=$(ssh-pub-key)"'
             environmentServiceNameAzureRM: $(serviceconnection)
             workingDirectory: '$(working_directory)'
-          env:
-            AZDO_PERSONAL_ACCESS_TOKEN: $(ado-token)
-            AZDO_ORG_SERVICE_URL: $(ado_org)
-            AZDO_GITHUB_SERVICE_CONNECTION_PAT: $(github-token)
-            TF_VAR_ado_token: $(ado-token)
-            TF_VAR_ado_org_service_url: $(ado_org)
+        - bash: |
+            export AZDO_PERSONAL_ACCESS_TOKEN=$(ado-token)
+            export AZDO_ORG_SERVICE_URL=$(ado_org)
 
   #Checkov to scan the execution plan for vulnerabilities and exposed outputs
         - task: Bash@3
@@ -269,12 +270,10 @@ stages:
             backendAzureRmContainerName: $(backend_container)
             backendAzureRmKey: $(backendkey_tfstate)
             workingDirectory: '$(working_directory)'
-          env:
-            AZDO_PERSONAL_ACCESS_TOKEN: $(ado-token)
-            AZDO_ORG_SERVICE_URL: $(ado_org)
-            AZDO_GITHUB_SERVICE_CONNECTION_PAT: $(github-token)
-            TF_VAR_ado_token: $(ado-token)
-            TF_VAR_ado_org_service_url: $(ado_org)
+        - bash: |
+            export AZDO_PERSONAL_ACCESS_TOKEN=$(ado-token)
+            export AZDO_ORG_SERVICE_URL=$(ado_org)
+
         - task: Bash@3
           inputs:
             targetType: 'inline'
@@ -289,12 +288,10 @@ stages:
             commandOptions: '-input=false -var-file="terraform.tfvars" -var="github_token=$(github-token)" -var="ado_token=$(ado-token)" -var="ssh_public_key=$(ssh-pub-key)"'
             environmentServiceNameAzureRM: $(serviceconnection)
             workingDirectory: '$(working_directory)'
-          env:
-            AZDO_PERSONAL_ACCESS_TOKEN: $(ado-token)
-            AZDO_ORG_SERVICE_URL: $(ado_org)
-            AZDO_GITHUB_SERVICE_CONNECTION_PAT: $(github-token)
-            TF_VAR_ado_token: $(ado-token)
-            TF_VAR_ado_org_service_url: $(ado_org)
+        - bash: |
+            export AZDO_PERSONAL_ACCESS_TOKEN=$(ado-token)
+            export AZDO_ORG_SERVICE_URL=$(ado_org)
+
 
         - task: TerraformTaskV2@2
           displayName: 'apply'
@@ -304,9 +301,6 @@ stages:
             commandOptions: '-input=false -auto-approve -var-file="terraform.tfvars" -var="github_token=$(github-token)" -var="ado_token=$(ado-token)" -var="ssh_public_key=$(ssh-pub-key)"'
             environmentServiceNameAzureRM: $(serviceconnection)
             workingDirectory: '$(working_directory)'
-          env:
-            AZDO_PERSONAL_ACCESS_TOKEN: $(ado-token)
-            AZDO_ORG_SERVICE_URL: $(ado_org)
-            AZDO_GITHUB_SERVICE_CONNECTION_PAT: $(github-token)
-            TF_VAR_ado_token: $(ado-token)
-            TF_VAR_ado_org_service_url: $(ado_org)
+        - bash: |
+            export AZDO_PERSONAL_ACCESS_TOKEN=$(ado-token)
+            export AZDO_ORG_SERVICE_URL=$(ado_org)
