@@ -296,7 +296,7 @@ stages:
             # Verify authentication
             echo "Verifying authentication..."
             az devops project list --output table
-            displayName: 'Azure DevOps Authentication'
+          displayName: 'Azure DevOps Authentication'
           env:
             ARM_CLIENT_ID: $(client_id)
             ARM_CLIENT_SECRET: $(spn_sc)
