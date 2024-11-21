@@ -191,35 +191,35 @@ stages:
               validate_token "SSH_PUBLIC_KEY" "$(ssh-pub-key)" 10
 
               echo "All tokens validated successfully!"
-            # Install Azure CLI if not already present
-            curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+              # Install Azure CLI if not already present
+              curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
 
-            # Upgrade Azure CLI and extensions
-            az upgrade --yes
+              # Upgrade Azure CLI and extensions
+              az upgrade --yes
 
-            # Remove and re-add Azure DevOps extension
-            az extension remove --name azure-devops
-            az extension add --name azure-devops
+              # Remove and re-add Azure DevOps extension
+              az extension remove --name azure-devops
+              az extension add --name azure-devops
 
-            # Configure Azure DevOps CLI
-            az devops configure --defaults organization=$(ado_org)
+              # Configure Azure DevOps CLI
+              az devops configure --defaults organization=$(ado_org)
 
-            # Attempt to login using environment variables
-            echo "Logging in with Azure credentials"
-            az login --service-principal \
-                -u "$ARM_CLIENT_ID" \
-                -p "$ARM_CLIENT_SECRET" \
-                --tenant "$ARM_TENANT_ID"
+              # Attempt to login using environment variables
+              echo "Logging in with Azure credentials"
+              az login --service-principal \
+                  -u "$ARM_CLIENT_ID" \
+                  -p "$ARM_CLIENT_SECRET" \
+                  --tenant "$ARM_TENANT_ID"
 
-            # Authenticate with Azure DevOps using PAT token
-            echo "Authenticating with Azure DevOps"
-            az devops login \
-                --organization "$(ado_org)" \
-                <<< "$(ado-token)"
+              # Authenticate with Azure DevOps using PAT token
+              echo "Authenticating with Azure DevOps"
+              az devops login \
+                  --organization "$(ado_org)" \
+                  <<< "$(ado-token)"
 
-            # Verify authentication
-            echo "Verifying authentication..."
-            az devops project list --output table
+              # Verify authentication
+              echo "Verifying authentication..."
+              az devops project list --output table
         displayName: 'Azure DevOps Authentication'
         env:
           ARM_CLIENT_ID: $(client_id)
