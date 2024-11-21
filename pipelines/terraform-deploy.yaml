@@ -158,11 +158,21 @@ stages:
           # Install Azure DevOps CLI extension
           export AZDO_PERSONAL_ACCESS_TOKEN=$($(ado-token))
           export AZDO_ORG_SERVICE_URL=$(ado_org)
+
+          curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+
           az upgrade --yes
 
           # Remove and re-add Azure DevOps extension to ensure clean state
           az extension remove --name azure-devops
           az extension add --name azure-devops
+
+          # Alternative authentication method
+          echo "Attempting alternative authentication"
+          az login --service-principal \
+              -u "$(client_id)" \
+              -p "$(spn-sc)" \
+              --tenant "$(tenant_id)"
 
           # Configure defaults
           az devops configure --defaults organization=$(ado_org)
