@@ -186,6 +186,17 @@ stages:
             backendAzureRmKey: $(backendkey_tfstate)
             workingDirectory: '$(working_directory)'
         - bash: |
+                # Install Azure DevOps CLI extension
+            az extension add --name azure-devops
+
+            # Configure defaults
+            az devops configure --defaults organization=$(ado_org)
+
+            # Authenticate
+            echo "$(ado-token)" | az devops login --organization $(ado_org)
+
+            # Test authentication
+            az devops project list --output table
             export AZDO_PERSONAL_ACCESS_TOKEN=$(ado-token)
             export AZDO_ORG_SERVICE_URL=$(ado_org)
 
@@ -198,6 +209,17 @@ stages:
             environmentServiceNameAzureRM: $(serviceconnection)
             workingDirectory: '$(working_directory)'
         - bash: |
+                # Install Azure DevOps CLI extension
+            az extension add --name azure-devops
+
+            # Configure defaults
+            az devops configure --defaults organization=$(ado_org)
+
+            # Authenticate
+            echo "$(ado-token)" | az devops login --organization $(ado_org)
+
+            # Test authentication
+            az devops project list --output table
             export AZDO_PERSONAL_ACCESS_TOKEN=$(ado-token)
             export AZDO_ORG_SERVICE_URL=$(ado_org)
 
@@ -271,6 +293,17 @@ stages:
             backendAzureRmKey: $(backendkey_tfstate)
             workingDirectory: '$(working_directory)'
         - bash: |
+                # Install Azure DevOps CLI extension
+            az extension add --name azure-devops
+
+            # Configure defaults
+            az devops configure --defaults organization=$(ado_org)
+
+            # Authenticate
+            echo "$(ado-token)" | az devops login --organization $(ado_org)
+
+            # Test authentication
+            az devops project list --output table
             export AZDO_PERSONAL_ACCESS_TOKEN=$(ado-token)
             export AZDO_ORG_SERVICE_URL=$(ado_org)
 
@@ -289,6 +322,17 @@ stages:
             environmentServiceNameAzureRM: $(serviceconnection)
             workingDirectory: '$(working_directory)'
         - bash: |
+            # Install Azure DevOps CLI extension
+            az extension add --name azure-devops
+
+            # Configure defaults
+            az devops configure --defaults organization=$(ado_org)
+
+            # Authenticate
+            echo "$(ado-token)" | az devops login --organization $(ado_org)
+
+            # Test authentication
+            az devops project list --output table
             export AZDO_PERSONAL_ACCESS_TOKEN=$(ado-token)
             export AZDO_ORG_SERVICE_URL=$(ado_org)
 
