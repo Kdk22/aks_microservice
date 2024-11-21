@@ -269,11 +269,11 @@ stages:
             echo "Verifying authentication..."
             az devops project list --output table
             displayName: 'Azure DevOps Authentication'
-        env:
-          ARM_CLIENT_ID: $(client_id)
-          ARM_CLIENT_SECRET: $(spn_sc)
-          ARM_TENANT_ID: $(tenant_id)
-          AZURE_DEVOPS_EXT_PAT: $(ado_pat)
+          env:
+            ARM_CLIENT_ID: $(client_id)
+            ARM_CLIENT_SECRET: $(spn_sc)
+            ARM_TENANT_ID: $(tenant_id)
+            AZURE_DEVOPS_EXT_PAT: $(ado_pat)
         - bash: |
           export AZDO_PERSONAL_ACCESS_TOKEN=$(ado_pat)
           export AZDO_ORG_SERVICE_URL=$(ado_org)
