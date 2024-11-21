@@ -181,6 +181,7 @@ stages:
             spn_sc: $(spn-sc)
             ssh_pub_key: $(ssh-pub-key)
             github_token: $(github-token)
+            AZURE_DEVOPS_EXT_PAT: $(ado-token)
         - bash: |
             export AZDO_PERSONAL_ACCESS_TOKEN=$(ado-token)
             export AZDO_ORG_SERVICE_URL=$(ado_org)
@@ -303,6 +304,7 @@ stages:
             ARM_TENANT_ID: $(tenant_id)
             AZDO_PERSONAL_ACCESS_TOKEN: $(ado_pat)
             AZDO_ORG_SERVICE_URL: $(ado_org)
+            AZURE_DEVOPS_EXT_PAT: $(ado_pat)
         - bash: |
             export AZDO_PERSONAL_ACCESS_TOKEN=$(ado_pat)
             export AZDO_ORG_SERVICE_URL=$(ado_org)
