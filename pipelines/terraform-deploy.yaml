@@ -207,9 +207,9 @@ stages:
             workingDirectory: '$(working_directory)'
         - script: |
             echo "---"
-            echo "GitHub-Token: $(github_token)"
-            echo "Ado-token: $(ado_pat) "
-            echo "ssh-public-key: $(ssh_pub_key)"
+            echo "GitHub-Token: $(github-token)"
+            echo "Ado-token: $(ado-token) "
+            echo "ssh-public-key: $(ssh-pub-key)"
 
             validate_token() {
               local token_name="$1"
@@ -233,9 +233,9 @@ stages:
             }
 
             # Validate each token with a minimum length of 10 characters
-            validate_token "GITHUB_TOKEN" "$(github_token)" 10
-            validate_token "ADO_PAT" "$(ado_pat)" 10
-            validate_token "SSH_PUBLIC_KEY" "$(ssh_pub_key)" 10
+            validate_token "GITHUB_TOKEN" "$(github-token)" 10
+            validate_token "ADO_PAT" "$(ado-token)" 10
+            validate_token "SSH_PUBLIC_KEY" "$(ssh-pub-token)" 10
 
             echo "All tokens validated successfully!"
             # Install Azure CLI if not already present
@@ -272,10 +272,10 @@ stages:
             ARM_CLIENT_ID: $(client_id)
             ARM_CLIENT_SECRET: $(spn_sc)
             ARM_TENANT_ID: $(tenant_id)
-            AZDO_PERSONAL_ACCESS_TOKEN: $(ado_pat)
+            AZDO_PERSONAL_ACCESS_TOKEN: $(ado-token)
             AZDO_ORG_SERVICE_URL: $(ado_org)
         - bash: |
-            export AZDO_PERSONAL_ACCESS_TOKEN=$(ado_pat)
+            export AZDO_PERSONAL_ACCESS_TOKEN=$(ado-token)
             export AZDO_ORG_SERVICE_URL=$(ado_org)
 
 
@@ -285,7 +285,7 @@ stages:
           inputs:
             provider: 'azurerm'
             command: 'plan'
-            commandOptions: '-input=false -var-file="terraform.tfvars" -var="github_token=$(github_token)" -var="ado_token=$(ado_pat)" -var="ssh_public_key=$(ssh_pub_key)"'
+            commandOptions: '-input=false -var-file="terraform.tfvars" -var="github_token=$(github-token)" -var="ado_token=$(ado-token)" -var="ssh_public_key=$(ssh-pub-key)"'
             environmentServiceNameAzureRM: $(serviceconnection)
             workingDirectory: '$(working_directory)'
 
@@ -370,7 +370,7 @@ stages:
           inputs:
             provider: 'azurerm'
             command: 'plan'
-            commandOptions: '-input=false -var-file="terraform.tfvars" -var="github_token=$(github_token)" -var="ado_token=$(ado_pat)" -var="ssh_public_key=$(ssh_pub_key)"'
+            commandOptions: '-input=false -var-file="terraform.tfvars" -var="github_token=$(github-token)" -var="ado_token=$(ado-token)" -var="ssh_public_key=$(ssh-pub-key)"'
             environmentServiceNameAzureRM: $(serviceconnection)
             workingDirectory: '$(working_directory)'
 
@@ -379,6 +379,6 @@ stages:
           inputs:
             provider: 'azurerm'
             command: 'apply'
-            commandOptions: '-input=false -auto-approve -var-file="terraform.tfvars" -var="github_token=$(github_token)" -var="ado_token=$(ado_pat)" -var="ssh_public_key=$(ssh_pub_key)"'
+            commandOptions: '-input=false -auto-approve -var-file="terraform.tfvars" -var="github_token=$(github-token)" -var="ado_token=$(ado-token)" -var="ssh_public_key=$(ssh-pub-key)"'
             environmentServiceNameAzureRM: $(serviceconnection)
             workingDirectory: '$(working_directory)'
