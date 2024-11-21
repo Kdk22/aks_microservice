@@ -186,7 +186,7 @@ stages:
             backendAzureRmKey: $(backendkey_tfstate)
             workingDirectory: '$(working_directory)'
         - bash: |
-                # Install Azure DevOps CLI extension
+            # Install Azure DevOps CLI extension
             az extension add --name azure-devops
 
             # Configure defaults
@@ -209,7 +209,7 @@ stages:
             environmentServiceNameAzureRM: $(serviceconnection)
             workingDirectory: '$(working_directory)'
         - bash: |
-                # Install Azure DevOps CLI extension
+            # Install Azure DevOps CLI extension
             az extension add --name azure-devops
 
             # Configure defaults
@@ -293,7 +293,7 @@ stages:
             backendAzureRmKey: $(backendkey_tfstate)
             workingDirectory: '$(working_directory)'
         - bash: |
-                # Install Azure DevOps CLI extension
+            # Install Azure DevOps CLI extension
             az extension add --name azure-devops
 
             # Configure defaults
