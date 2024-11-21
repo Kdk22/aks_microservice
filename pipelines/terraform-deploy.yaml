@@ -29,13 +29,13 @@ variables:
 - name: 'ado_org'
   value: 'https://dev.azure.com/utft0'
 
--name: 'sub_id'
+- name: 'sub_id'
   value: '75e2cef5-d3ca-42ff-8b0d-4dab256b9453'
 
--name: 'tenant_id'
+- name: 'tenant_id'
   value: 'd860f09e-f4ba-414b-84e1-43a6b0809e0c'
 
--name: 'client_id'
+- name: 'client_id'
   value: '68f04651-0b76-443d-8f2c-9630e526a115'
 
 
