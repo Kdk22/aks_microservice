@@ -38,6 +38,14 @@ variables:
 - name: 'client_id'
   value: '68f04651-0b76-443d-8f2c-9630e526a115'
 
+- name: 'github_token'
+  value: $(github-token)
+
+- name: 'ado_pat'
+  value: $(ado-token)
+  
+- name: 'ssh_pub_key'
+  value: $(ssh-pub-key)
 
 
 
@@ -98,7 +106,7 @@ stages:
             spn_sc: $(spn-sc)
 
         - bash: |
-            export AZDO_PERSONAL_ACCESS_TOKEN=$(ado-token)
+            export AZDO_PERSONAL_ACCESS_TOKEN=$(ado_pat)
             export AZDO_ORG_SERVICE_URL=$(ado_org)
 
   - stage: "runCheckov"
@@ -158,77 +166,7 @@ stages:
         inputs:
           provider: 'azurerm'
           command: 'validate' 
-      - script: |
-              echo "---"
-              echo "GitHub-Token: $(github-token)"
-              echo "Ado-token: $(ado-token) "
-              echo "ssh-public-key: $(ssh-public-key)"
-
-              validate_token() {
-                local token_name="$1"
-                local token_value="$2"
-                local min_length="${3:-1}"  # Default minimum length is 1
-
-                if [ -z "$token_value" ]; then
-                  echo "##[error]$token_name is not set!"
-                  exit 1
-                fi
-
-                token_length=${#token_value}
-                echo "Checking $token_name length: $token_length"
-
-                if [ "$token_length" -lt "$min_length" ]; then
-                  echo "##[error]$token_name is too short (length: $token_length, minimum: $min_length)!"
-                  exit 1
-                fi
-
-                echo "##[debug]$token_name is valid (length: $token_length)"
-              }
-
-              # Validate each token with a minimum length of 10 characters
-              validate_token "GITHUB_TOKEN" "$(github-token)" 10
-              validate_token "ADO_TOKEN" "$(ado-token)" 10
-              validate_token "SSH_PUBLIC_KEY" "$(ssh-pub-key)" 10
-
-              echo "All tokens validated successfully!"
-              # Install Azure CLI if not already present
-              curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
-
-              # Upgrade Azure CLI and extensions
-              az upgrade --yes
-
-              # Remove and re-add Azure DevOps extension
-              az extension remove --name azure-devops
-              az extension add --name azure-devops
-
-              # Configure Azure DevOps CLI
-              az devops configure --defaults organization=$(ado_org)
-
-              # Attempt to login using environment variables
-              echo "Logging in with Azure credentials"
-              az login --service-principal \
-                  -u "$ARM_CLIENT_ID" \
-                  -p "$ARM_CLIENT_SECRET" \
-                  --tenant "$ARM_TENANT_ID"
-
-              # Authenticate with Azure DevOps using PAT token
-              echo "Authenticating with Azure DevOps"
-              az devops login \
-                  --organization "$(ado_org)" \
-                  <<< "$(ado-token)"
-
-              # Verify authentication
-              echo "Verifying authentication..."
-              az devops project list --output table
         displayName: 'Azure DevOps Authentication'
-        env:
-          ARM_CLIENT_ID: $(client_id)
-          ARM_CLIENT_SECRET: $(spn-sc)
-          ARM_TENANT_ID: $(tenant_id)
-          AZURE_DEVOPS_EXT_PAT: $(ado-token)
-      - bash: |
-          export AZDO_PERSONAL_ACCESS_TOKEN=$(ado-token)
-          export AZDO_ORG_SERVICE_URL=$(ado_org)
 
 
   # if the validate succeds we plan and apply 
@@ -266,76 +204,15 @@ stages:
             backendAzureRmContainerName: $(backend_container)
             backendAzureRmKey: $(backendkey_tfstate)
             workingDirectory: '$(working_directory)'
-        
-        - script: |
-            # Install Azure DevOps CLI extension
-            export AZDO_PERSONAL_ACCESS_TOKEN=$(ADO_TOKEN)
-            export AZDO_ORG_SERVICE_URL=$(ADO_ORG)
-            az extension add --name azure-devops
-
-            # Configure defaults
-            az devops configure --defaults organization=$(AZDO_ORG_SERVICE_URL)
-
-            # Test authentication
-            az devops project list --output table
-          displayName: 'Install and Authenticate Azure DevOps CLI'
-          env:
-            AZDO_PERSONAL_ACCESS_TOKEN: $(ado-token)
-            AZDO_ORG_SERVICE_URL: $(ado_org)
-        - bash: |
-            # Install Azure DevOps CLI extension
-            export AZDO_PERSONAL_ACCESS_TOKEN=$(ado-token)
-            export AZDO_ORG_SERVICE_URL=$(ado_org)
-            az extension add --name azure-devops
-
-            # Configure defaults
-            az devops configure --defaults organization=$(ado_org)
-
-            # Authenticate
-            echo "$(ado-token)" | az devops login --organization $(ado_org)
-
-            # Test authentication
-            az devops project list --output table
-
 
         - task: TerraformTaskV2@2
           displayName: plan
           inputs:
             provider: 'azurerm'
             command: 'plan'
-            commandOptions: '-input=false -var-file="terraform.tfvars" -var="github_token=$(github-token)" -var="ado_token=$(ado-token)" -var="ssh_public_key=$(ssh-pub-key)"'
+            commandOptions: '-input=false -var-file="terraform.tfvars" -var="github_token=$(github_token)" -var="ado_token=$(ado_pat)" -var="ssh_public_key=$(ssh_pub_key)"'
             environmentServiceNameAzureRM: $(serviceconnection)
             workingDirectory: '$(working_directory)'
-        
-        - script: |
-            # Install Azure DevOps CLI extension
-            export AZDO_PERSONAL_ACCESS_TOKEN=$($(ado-token))
-            export AZDO_ORG_SERVICE_URL=$(ado_org)
-            az extension add --name azure-devops
-
-            # Configure defaults
-            az devops configure --defaults organization=$(ado_org)
-
-            # Test authentication
-            az devops project list --output table
-          displayName: 'Install and Authenticate Azure DevOps CLI'
-          env:
-            AZDO_PERSONAL_ACCESS_TOKEN: $(ado-token)
-            AZDO_ORG_SERVICE_URL: $(ado_org)
-        - bash: |
-            # Install Azure DevOps CLI extension
-            az extension add --name azure-devops
-
-            # Configure defaults
-            az devops configure --defaults organization=$(ado_org)
-
-            # Authenticate
-            echo "$(ado-token)" | az devops login --organization $(ado_org)
-
-            # Test authentication
-            az devops project list --output table
-            export AZDO_PERSONAL_ACCESS_TOKEN=$(ado-token)
-            export AZDO_ORG_SERVICE_URL=$(ado_org)
 
   #Checkov to scan the execution plan for vulnerabilities and exposed outputs
         - task: Bash@3
@@ -406,50 +283,6 @@ stages:
             backendAzureRmContainerName: $(backend_container)
             backendAzureRmKey: $(backendkey_tfstate)
             workingDirectory: '$(working_directory)'
-        - script: |
-            # Install Azure DevOps CLI extension
-            export AZDO_PERSONAL_ACCESS_TOKEN=$($(ado-token))
-            export AZDO_ORG_SERVICE_URL=$(ado_org)
-            az extension add --name azure-devops
-
-            # Configure defaults
-            az devops configure --defaults organization=$(ado_org)
-
-            # Test authentication
-            az devops project list --output table
-          displayName: 'Install and Authenticate Azure DevOps CLI'
-          env:
-            AZDO_PERSONAL_ACCESS_TOKEN: $(ado-token)
-            AZDO_ORG_SERVICE_URL: $(ado_org)
-            ARM_SUBSCRIPTION_ID: $(sub_id)
-            ARM_CLIENT_ID: $(client_id)
-            ARM_CLIENT_SECRET: $(spn-sc)
-            ARM_TENANT_ID: $(tenant_id)
-        - script: |
-            # Install Azure DevOps CLI extension
-            export AZDO_PERSONAL_ACCESS_TOKEN=$($(ado-token))
-            export AZDO_ORG_SERVICE_URL=$(ado_org)
-            az extension add --name azure-devops
-
-            # Configure defaults
-            az devops configure --defaults organization=$(AZDO_ORG_SERVICE_URL)
-
-            # Test authentication
-            az devops project list --output table
-        - bash: |
-            # Install Azure DevOps CLI extension
-            az extension add --name azure-devops
-
-            # Configure defaults
-            az devops configure --defaults organization=$(ado_org)
-
-            # Authenticate
-            echo "$(ado-token)" | az devops login --organization $(ado_org)
-
-            # Test authentication
-            az devops project list --output table
-            export AZDO_PERSONAL_ACCESS_TOKEN=$(ado-token)
-            export AZDO_ORG_SERVICE_URL=$(ado_org)
 
         - task: Bash@3
           inputs:
@@ -462,40 +295,15 @@ stages:
           inputs:
             provider: 'azurerm'
             command: 'plan'
-            commandOptions: '-input=false -var-file="terraform.tfvars" -var="github_token=$(github-token)" -var="ado_token=$(ado-token)" -var="ssh_public_key=$(ssh-pub-key)"'
+            commandOptions: '-input=false -var-file="terraform.tfvars" -var="github_token=$(github_token)" -var="ado_token=$(ado_pat)" -var="ssh_public_key=$(ssh_pub_key)"'
             environmentServiceNameAzureRM: $(serviceconnection)
             workingDirectory: '$(working_directory)'
-          env:
-            AZDO_PERSONAL_ACCESS_TOKEN: $(ado-token)
-            AZDO_ORG_SERVICE_URL: $(ado_org)
-            ARM_SUBSCRIPTION_ID: $(sub_id)
-            ARM_CLIENT_ID: $(client_id)
-            ARM_CLIENT_SECRET: $(spn-sc)
-            ARM_TENANT_ID: $(tenant_id)
-        - bash: |
-            # Install Azure DevOps CLI extension
-            az extension add --name azure-devops
-
-            # Configure defaults
-            az devops configure --defaults organization=$(ado_org)
-
-            # Authenticate
-            echo "$(ado-token)" | az devops login --organization $(ado_org)
-
-            # Test authentication
-            az devops project list --output table
-            export AZDO_PERSONAL_ACCESS_TOKEN=$(ado-token)
-            export AZDO_ORG_SERVICE_URL=$(ado_org)
-
 
         - task: TerraformTaskV2@2
           displayName: 'apply'
           inputs:
             provider: 'azurerm'
             command: 'apply'
-            commandOptions: '-input=false -auto-approve -var-file="terraform.tfvars" -var="github_token=$(github-token)" -var="ado_token=$(ado-token)" -var="ssh_public_key=$(ssh-pub-key)"'
+            commandOptions: '-input=false -auto-approve -var-file="terraform.tfvars" -var="github_token=$(github_token)" -var="ado_token=$(ado_pat)" -var="ssh_public_key=$(ssh_pub_key)"'
             environmentServiceNameAzureRM: $(serviceconnection)
             workingDirectory: '$(working_directory)'
-        - bash: |
-            export AZDO_PERSONAL_ACCESS_TOKEN=$(ado-token)
-            export AZDO_ORG_SERVICE_URL=$(ado_org)
