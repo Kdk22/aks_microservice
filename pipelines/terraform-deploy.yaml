@@ -165,8 +165,7 @@ stages:
         displayName: 'validate'
         inputs:
           provider: 'azurerm'
-          command: 'validate' 
-        displayName: 'Azure DevOps Authentication'
+          command: 'validate'
 
 
   # if the validate succeds we plan and apply 
