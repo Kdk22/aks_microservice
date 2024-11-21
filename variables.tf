@@ -70,8 +70,6 @@ variable "ado_pipeline_yaml_path_1" {
 variable "ado_org_service_url" {
   type        = string
   description = "Path to project url"
-  default     = "blank"
-
 }
 
 variable "project_name" {
