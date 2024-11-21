@@ -258,7 +258,8 @@ stages:
             workingDirectory: '$(working_directory)'
         - bash: |
             export AZDO_PERSONAL_ACCESS_TOKEN: $(ado-token)
-            exportAZDO_ORG_SERVICE_URL: $(ado_org)
+            export AZDO_ORG_SERVICE_URL: $(ado_org)
+            export AZDO_GITHUB_SERVICE_CONNECTION_PAT: $(github-token)
 
         - task: Bash@3
           inputs:
