@@ -85,8 +85,8 @@ stages:
               echo "All tokens validated successfully!"
           displayName: 'Verify Secrets'
           env:
-            AZDO_PERSONAL_ACCESS_TOKEN: $(ado-token)
-            AZDO_ORG_SERVICE_URL: $(ado_org)
+            TF_VAR_ado_token: $(ado-token)
+            TF_VAR_ado_org_service_url: $(ado_org)
 
   - stage: "runCheckov"
     displayName: "Checkov: Static Code Analysis"
