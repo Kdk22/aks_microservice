@@ -118,13 +118,12 @@ stages:
         continueOnError: false
         steps:
         - task: AzureKeyVault@2
+          displayName: 'Azure Key Vault'
           inputs:
             azureSubscription: '$(serviceconnection)'
             KeyVaultName: 'aks-proj-kv'
             SecretsFilter: '*'
-            RunAsPreJob: true
           runAsPreJob: true
-          displayName: 'Azure Key Vault'
 
         - task: PowerShell@2
           name: SetPipelineVariables
