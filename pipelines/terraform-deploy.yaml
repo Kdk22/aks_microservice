@@ -424,6 +424,16 @@ stages:
             commandOptions: '-input=false -var-file="terraform.tfvars" -var="github_token=$(github_token)" -var="ado_token=$(ado_pat)" -var="ssh_public_key=$(ssh_pub_key)"'
             environmentServiceNameAzureRM: $(serviceconnection)
             workingDirectory: '$(working_directory)'
+          env:
+            # Set these environment variables for the Azure DevOps provider
+            AZDO_PERSONAL_ACCESS_TOKEN: $(ado_pat)
+            AZDO_ORG_SERVICE_URL: $(ado_org)
+            # Azure credentials
+            ARM_CLIENT_ID: $(client_id)
+            ARM_CLIENT_SECRET: $(spn_sc)
+            ARM_TENANT_ID: $(tenant_id)
+            ARM_SUBSCRIPTION_ID: $(subscription_id)
+            AZURE_DEVOPS_EXT_PAT: $(ado_pat)
 
         - task: TerraformTaskV2@2
           displayName: 'apply'
@@ -432,4 +442,14 @@ stages:
             command: 'apply'
             commandOptions: '-input=false -auto-approve -var-file="terraform.tfvars" -var="github_token=$(github_token)" -var="ado_token=$(ado_pat)" -var="ssh_public_key=$(ssh_pub_key)"'
             environmentServiceNameAzureRM: $(serviceconnection)
-            workingDirectory: '$(working_directory)'
+            workingDirectory: '$(working_directory)'         
+          env:
+            # Set these environment variables for the Azure DevOps provider
+            AZDO_PERSONAL_ACCESS_TOKEN: $(ado_pat)
+            AZDO_ORG_SERVICE_URL: $(ado_org)
+            # Azure credentials
+            ARM_CLIENT_ID: $(client_id)
+            ARM_CLIENT_SECRET: $(spn_sc)
+            ARM_TENANT_ID: $(tenant_id)
+            ARM_SUBSCRIPTION_ID: $(subscription_id)
+            AZURE_DEVOPS_EXT_PAT: $(ado_pat)
