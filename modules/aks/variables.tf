@@ -39,7 +39,7 @@ variable "automatic_channel_upgrade" {
 
 variable "sku_tier" {
   description = "(Optional) The SKU Tier that should be used for this Kubernetes Cluster. Possible values are Free and Paid (which includes the Uptime SLA). Defaults to Free."
-  default     = "Premium"
+  default     = "Standard"
   type        = string
 
   validation {
@@ -49,7 +49,7 @@ variable "sku_tier" {
 }
 variable "kubernetes_version" {
   description = "Specifies the AKS Kubernetes version"
-  default     = "1.27.9"
+  default     = "1.26.6"
   type        = string
 }
 
