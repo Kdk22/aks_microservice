@@ -66,7 +66,7 @@ variable "default_node_pool_name" {
 
 variable "default_node_pool_vm_size" {
   description = "Specifies the vm size of the default node pool"
-  default     = "Standard_D16s_v3"
+  default     = "Standard_D8s_v3"
   type        = string
 }
 
