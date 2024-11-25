@@ -49,7 +49,7 @@ variable "sku_tier" {
 }
 variable "kubernetes_version" {
   description = "Specifies the AKS Kubernetes version"
-  default     = "1.27"
+  default     = "1.30"
   type        = string
 }
 
