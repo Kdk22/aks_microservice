@@ -2,9 +2,9 @@ data "azurerm_client_config" "current" {}
 
 data "azurerm_subscription" "primary" {
 }
-data "azuread_user" "user_details"{
-  user_principal_name = "utft0_outlook.com#EXT#@utft0outlook.onmicrosoft.com"
-}
+# data "azuread_user" "user_details"{
+#   user_principal_name = "utft0_outlook.com#EXT#@utft0outlook.onmicrosoft.com"
+# }
 
 data "azurerm_key_vault" "created_kv" {
   name          =      var.keyvault_name
