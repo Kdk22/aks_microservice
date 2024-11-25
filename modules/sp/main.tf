@@ -5,6 +5,7 @@ resource "azuread_application" "main" {
   owners       = [data.azuread_client_config.current.object_id]
 
     lifecycle {
+      prevent_destroy = true
     ignore_changes = all
   }
 }
@@ -14,6 +15,11 @@ resource "azuread_service_principal" "main" {
   app_role_assignment_required = true
   owners                       = [data.azuread_client_config.current.object_id]
   description = " This is the service principle for aks project . It is used in devops pipeline as well"
+
+   lifecycle {
+    prevent_destroy = true
+    ignore_changes = all  # This will ignore all changes to the resource
+  }
 }
 
 

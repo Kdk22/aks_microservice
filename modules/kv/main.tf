@@ -11,6 +11,11 @@ resource "azurerm_key_vault" "kv" {
   soft_delete_retention_days = 7
   enable_rbac_authorization = false
    # if we set this true we don't need access policy, as we have contributor access to service principle so it assumes the same
+
+      lifecycle {
+    prevent_destroy = true
+    ignore_changes = all  # This will ignore all changes to the resource
+  }
  
 }
 
