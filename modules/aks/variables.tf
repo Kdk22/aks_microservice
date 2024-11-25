@@ -39,7 +39,7 @@ variable "automatic_channel_upgrade" {
 
 variable "sku_tier" {
   description = "(Optional) The SKU Tier that should be used for this Kubernetes Cluster. Possible values are Free and Paid (which includes the Uptime SLA). Defaults to Free."
-  default     = "Free"
+  default     = "Premium"
   type        = string
 
   validation {
