@@ -39,17 +39,31 @@ module "ServicePrincipal" {
   depends_on = [
     azurerm_resource_group.rg
   ]
+
+
+}
+
+
+locals  {
+  roles = {
+    contributor = "Contributor"
+    key_vault = "Key Vault Administrator"
+
+  }
 }
 
 resource "azurerm_role_assignment" "rolespn" {
 
+for_each = local.roles
   scope                = data.azurerm_subscription.primary.id
-  role_definition_name = "Contributor"
+  role_definition_name = each.value
   principal_id         = module.ServicePrincipal.service_principal_object_id
   #data.azurerm_client_config.current.object_id if you want to give permission to yourself but
   # i have already given
   depends_on = [module.ServicePrincipal]
 }
+
+
 
 
 module "keyvault" {
