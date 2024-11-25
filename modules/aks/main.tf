@@ -11,7 +11,7 @@ data "azurerm_kubernetes_service_versions" "current" {
 ### DNS zone
 # 
 resource "azurerm_private_dns_zone" "aks" {
-  name                = "privatelink.centralindia.azmk8s.io"
+  name                = "privatelink.westus2.azmk8s.io"
   resource_group_name = var.RESOURCE_GROUP_NAME
 }
 
