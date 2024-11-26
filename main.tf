@@ -217,7 +217,7 @@ resource "azurerm_storage_container" "blob_container" {
 module "vnet" {
   source                      = "./modules/vnet"
   AKS_VNET_NAME               = var.AKS_VNET_NAME
-  LOCATION                    = azurerm_resource_group.rg["rg2"].location
+  LOCATION                    = "eastus"
   RESOURCE_GROUP_NAME         = azurerm_resource_group.rg["rg2"].name
   AKS_ADDRESS_SPACE           = var.AKS_ADDRESS_SPACE
   AKS_SUBNET_ADDRESS_PREFIX   = var.AKS_SUBNET_ADDRESS_PREFIX
@@ -239,7 +239,7 @@ module "vnet" {
 module "agent-vm" {
   source              = "./modules/agentvm"
   AGENT_VM_NAME       = var.AGENT_VM_NAME
-  LOCATION            = azurerm_resource_group.rg["rg2"].location
+  LOCATION            = "eastus"
   RESOURCE_GROUP_NAME = azurerm_resource_group.rg["rg2"].name
   ADMIN_USERNAME      = var.ADMIN_USERNAME
   ADMIN_PASSWORD      = var.ADMIN_PASSWORD
@@ -254,7 +254,7 @@ module "agent-vm" {
 module "acr" {
   source                      = "./modules/acr"
   PRIVATE_ACR_NAME            = var.PRIVATE_ACR_NAME
-  LOCATION                    = azurerm_resource_group.rg["rg2"].location
+  LOCATION                    = "eastus"
   RESOURCE_GROUP_NAME         = azurerm_resource_group.rg["rg2"].name
   SERVICE_PRINCIPAL_OBJECT_ID = data.azuread_service_principal.existing-sp.object_id
   ACR_SKU                     = var.ACR_SKU
@@ -272,7 +272,7 @@ module "sqldb" {
   source                      = "./modules/sqldb"
   AKS_SUBNET_ID               = module.vnet.aks_subnet_id
   AKS_SUBNET_SERVICE_ENDPOINT = module.vnet.aks_subnet_service_endpoints
-  LOCATION                    = azurerm_resource_group.rg["rg2"].location
+  LOCATION                    = "eastus"
   RESOURCE_GROUP_NAME         = azurerm_resource_group.rg["rg2"].name
   COLLATION                   = var.COLLATION
   DB_NAME                     = var.DB_NAME
@@ -288,7 +288,7 @@ module "sqldb" {
 
 module "appgate" {
   source               = "./modules/appgate"
-  LOCATION             = azurerm_resource_group.rg["rg2"].location
+  LOCATION             = "eastus"
   RESOURCE_GROUP_NAME  = azurerm_resource_group.rg["rg2"].name
   APP_GATEWAY_NAME     = var.APP_GATEWAY_NAME
   VIRTUAL_NETWORK_NAME = var.VIRTUAL_NETWORK_NAME
@@ -301,7 +301,7 @@ module "appgate" {
 
 module "log-analytics" {
   source              = "./modules/loga"
-  LOCATION            = azurerm_resource_group.rg["rg2"].location
+  LOCATION            = "eastus"
   RESOURCE_GROUP_NAME = azurerm_resource_group.rg["rg2"].name
 
   depends_on = [azurerm_resource_group.rg]
@@ -331,7 +331,7 @@ module "azure-fron-door" {
 module "aks" {
   source              = "./modules/aks/"
   NAME                = var.ACR_NAME
-  LOCATION            = azurerm_resource_group.rg["rg2"].location
+  LOCATION            = "eastus"
   RESOURCE_GROUP_NAME = azurerm_resource_group.rg["rg2"].name
   AKS_VNET_ID         = module.vnet.aks_vnet_id
   ACR_VNET_ID         = module.vnet.acr_vnet_id
