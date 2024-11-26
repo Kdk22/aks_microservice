@@ -344,7 +344,6 @@ module "aks" {
   rg_id               = azurerm_resource_group.rg["rg2"].id
   ssh_public_key      = var.ssh_public_key
 
-
   depends_on = [
      module.acr, module.vnet, module.appgate, azurerm_resource_group.rg
   ]

@@ -42,7 +42,7 @@ resource "azurerm_private_dns_zone_virtual_network_link" "aks-agent" {
 resource "azurerm_user_assigned_identity" "aks-access" {
   name                = "aks-access"
   resource_group_name = var.RESOURCE_GROUP_NAME
-  location            = var.LOCATION
+  location            = "eastus"
 }
 
 ### Identity role assignment
@@ -83,7 +83,7 @@ resource "azurerm_role_assignment" "Aks-AcrPull" {
 ### AKS cluster creation
 resource "azurerm_kubernetes_cluster" "akscluster" {
   name                      = var.NAME
-  location                  = var.LOCATION
+  location                  = "eastus"
   resource_group_name       = var.RESOURCE_GROUP_NAME
   kubernetes_version        = var.kubernetes_version
   dns_prefix                = var.DNS_PREFIX

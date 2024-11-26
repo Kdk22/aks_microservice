@@ -16,7 +16,7 @@
 resource "azurerm_container_registry" "acr" {
   name                          = var.PRIVATE_ACR_NAME
   resource_group_name           = var.RESOURCE_GROUP_NAME
-  location                      = var.LOCATION
+  location                      =  "eastus"
   sku                           = var.ACR_SKU
   admin_enabled                 = false
   public_network_access_enabled = false
@@ -46,7 +46,7 @@ resource "azurerm_private_dns_zone" "acr-dns-zone" {
 resource "azurerm_private_endpoint" "acr_private_endpoint" {
   name                = "${var.PRIVATE_ACR_NAME}-private-endpoint"
   resource_group_name = var.RESOURCE_GROUP_NAME
-  location            = var.LOCATION
+  location            = "eastus"
   subnet_id           = var.ACR_SUBNET_ID 
   #tags                = var.tags
     private_dns_zone_group {
