@@ -214,141 +214,141 @@ resource "azurerm_storage_container" "blob_container" {
 # }
 
 
-# module "vnet" {
-#   source                      = "./modules/vnet"
-#   AKS_VNET_NAME               = var.AKS_VNET_NAME
-#   LOCATION                    = "eastus"
-#   RESOURCE_GROUP_NAME         = azurerm_resource_group.rg["rg2"].name
-#   AKS_ADDRESS_SPACE           = var.AKS_ADDRESS_SPACE
-#   AKS_SUBNET_ADDRESS_PREFIX   = var.AKS_SUBNET_ADDRESS_PREFIX
-#   AKS_SUBNET_NAME             = var.AKS_SUBNET_NAME
-#   APPGW_SUBNET_NAME           = var.APPGW_SUBNET_NAME
-#   APPGW_SUBNET_ADDRESS_PREFIX = var.APPGW_SUBNET_ADDRESS_PREFIX
-#   ACR_VNET_NAME               = var.ACR_VNET_NAME
-#   ACR_SUBNET_NAME             = var.ACR_SUBNET_NAME
-#   ACR_ADDRESS_SPACE           = var.ACR_ADDRESS_SPACE
-#   ACR_SUBNET_ADDRESS_PREFIX   = var.ACR_SUBNET_ADDRESS_PREFIX
-#   AGENT_VNET_NAME             = var.AGENT_VNET_NAME
-#   AGENT_ADDRESS_SPACE         = var.AGENT_ADDRESS_SPACE
-#   AGENT_SUBNET_NAME           = var.AGENT_SUBNET_NAME
-#   AGENT_SUBNET_ADDRESS_PREFIX = var.AGENT_SUBNET_ADDRESS_PREFIX
+module "vnet" {
+  source                      = "./modules/vnet"
+  AKS_VNET_NAME               = var.AKS_VNET_NAME
+  LOCATION                    = "eastus"
+  RESOURCE_GROUP_NAME         = azurerm_resource_group.rg["rg2"].name
+  AKS_ADDRESS_SPACE           = var.AKS_ADDRESS_SPACE
+  AKS_SUBNET_ADDRESS_PREFIX   = var.AKS_SUBNET_ADDRESS_PREFIX
+  AKS_SUBNET_NAME             = var.AKS_SUBNET_NAME
+  APPGW_SUBNET_NAME           = var.APPGW_SUBNET_NAME
+  APPGW_SUBNET_ADDRESS_PREFIX = var.APPGW_SUBNET_ADDRESS_PREFIX
+  ACR_VNET_NAME               = var.ACR_VNET_NAME
+  ACR_SUBNET_NAME             = var.ACR_SUBNET_NAME
+  ACR_ADDRESS_SPACE           = var.ACR_ADDRESS_SPACE
+  ACR_SUBNET_ADDRESS_PREFIX   = var.ACR_SUBNET_ADDRESS_PREFIX
+  AGENT_VNET_NAME             = var.AGENT_VNET_NAME
+  AGENT_ADDRESS_SPACE         = var.AGENT_ADDRESS_SPACE
+  AGENT_SUBNET_NAME           = var.AGENT_SUBNET_NAME
+  AGENT_SUBNET_ADDRESS_PREFIX = var.AGENT_SUBNET_ADDRESS_PREFIX
 
-#   depends_on = [azurerm_resource_group.rg]
+  depends_on = [azurerm_resource_group.rg]
+}
+
+module "agent-vm" {
+  source              = "./modules/agentvm"
+  AGENT_VM_NAME       = var.AGENT_VM_NAME
+  LOCATION            = "eastus"
+  RESOURCE_GROUP_NAME = azurerm_resource_group.rg["rg2"].name
+  ADMIN_USERNAME      = var.ADMIN_USERNAME
+  ADMIN_PASSWORD      = var.ADMIN_PASSWORD
+  VM_SIZE             = var.VM_SIZE
+  AGENT_SUBNET_ID     = module.vnet.agent_vnet_subnet_id
+
+  depends_on = [
+    module.vnet, azurerm_resource_group.rg
+  ]
+}
+
+module "acr" {
+  source                      = "./modules/acr"
+  PRIVATE_ACR_NAME            = var.PRIVATE_ACR_NAME
+  LOCATION                    = "eastus"
+  RESOURCE_GROUP_NAME         = azurerm_resource_group.rg["rg2"].name
+  SERVICE_PRINCIPAL_OBJECT_ID = data.azuread_service_principal.existing-sp.object_id
+  ACR_SKU                     = var.ACR_SKU
+  AKS_VNET_ID                 = module.vnet.aks_vnet_id
+  AGENT_VNET_ID               = module.vnet.agent_vnet_id
+  ACR_VNET_ID                 = module.vnet.acr_vnet_id
+  AGENT_SUBNET_ID             = module.vnet.agent_vnet_subnet_id
+  ACR_SUBNET_ID               = module.vnet.acr_subnet_id
+
+  depends_on = [module.vnet, azurerm_resource_group.rg]
+
+}
+
+module "sqldb" {
+  source                      = "./modules/sqldb"
+  AKS_SUBNET_ID               = module.vnet.aks_subnet_id
+  AKS_SUBNET_SERVICE_ENDPOINT = module.vnet.aks_subnet_service_endpoints
+  LOCATION                    = "eastus"
+  RESOURCE_GROUP_NAME         = azurerm_resource_group.rg["rg2"].name
+  COLLATION                   = var.COLLATION
+  DB_NAME                     = var.DB_NAME
+  DBPASSWORD                  = var.DBPASSWORD
+  DBSERVER_NAME               = var.DBSERVER_NAME
+  DBUSERNAME                  = var.DBUSERNAME
+
+  depends_on = [
+    module.vnet, azurerm_resource_group.rg
+  ]
+
+}
+
+module "appgate" {
+  source               = "./modules/appgate"
+  LOCATION             = "eastus"
+  RESOURCE_GROUP_NAME  = azurerm_resource_group.rg["rg2"].name
+  APP_GATEWAY_NAME     = var.APP_GATEWAY_NAME
+  VIRTUAL_NETWORK_NAME = var.VIRTUAL_NETWORK_NAME
+  APPGW_PUBLIC_IP_NAME = var.APPGW_PUBLIC_IP_NAME
+  APPGW_SUBNET_ID      = module.vnet.appgw_subnet_id
+  depends_on           = [module.vnet, azurerm_resource_group.rg]
+
+
+}
+
+module "log-analytics" {
+  source              = "./modules/loga"
+  LOCATION            = "eastus"
+  RESOURCE_GROUP_NAME = azurerm_resource_group.rg["rg2"].name
+
+  depends_on = [azurerm_resource_group.rg]
+}
+
+module "azure-fron-door" {
+  source                 = "./modules/afd"
+  RESOURCE_GROUP_NAME    = azurerm_resource_group.rg["rg2"].name
+  APPGWPUBLIC_IP_ADDRESS = module.appgate.ip_address
+
+  depends_on = [
+    module.appgate, azurerm_resource_group.rg
+  ]
+}
+# module "aks"{
+#   source = "./modules/aks"
 # }
 
-# module "agent-vm" {
-#   source              = "./modules/agentvm"
-#   AGENT_VM_NAME       = var.AGENT_VM_NAME
-#   LOCATION            = "eastus"
-#   RESOURCE_GROUP_NAME = azurerm_resource_group.rg["rg2"].name
-#   ADMIN_USERNAME      = var.ADMIN_USERNAME
-#   ADMIN_PASSWORD      = var.ADMIN_PASSWORD
-#   VM_SIZE             = var.VM_SIZE
-#   AGENT_SUBNET_ID     = module.vnet.agent_vnet_subnet_id
-
-#   depends_on = [
-#     module.vnet, azurerm_resource_group.rg
-#   ]
-# }
-
-# module "acr" {
-#   source                      = "./modules/acr"
-#   PRIVATE_ACR_NAME            = var.PRIVATE_ACR_NAME
-#   LOCATION                    = "eastus"
-#   RESOURCE_GROUP_NAME         = azurerm_resource_group.rg["rg2"].name
-#   SERVICE_PRINCIPAL_OBJECT_ID = data.azuread_service_principal.existing-sp.object_id
-#   ACR_SKU                     = var.ACR_SKU
-#   AKS_VNET_ID                 = module.vnet.aks_vnet_id
-#   AGENT_VNET_ID               = module.vnet.agent_vnet_id
-#   ACR_VNET_ID                 = module.vnet.acr_vnet_id
-#   AGENT_SUBNET_ID             = module.vnet.agent_vnet_subnet_id
-#   ACR_SUBNET_ID               = module.vnet.acr_subnet_id
-
-#   depends_on = [module.vnet, azurerm_resource_group.rg]
+# resource "local_file" "kubeconfig" {
+#   depends_on   = [module.aks]
+#   filename     = "./kubeconfig"
+#   content      = module.aks.config
 
 # }
 
-# module "sqldb" {
-#   source                      = "./modules/sqldb"
-#   AKS_SUBNET_ID               = module.vnet.aks_subnet_id
-#   AKS_SUBNET_SERVICE_ENDPOINT = module.vnet.aks_subnet_service_endpoints
-#   LOCATION                    = "eastus"
-#   RESOURCE_GROUP_NAME         = azurerm_resource_group.rg["rg2"].name
-#   COLLATION                   = var.COLLATION
-#   DB_NAME                     = var.DB_NAME
-#   DBPASSWORD                  = var.DBPASSWORD
-#   DBSERVER_NAME               = var.DBSERVER_NAME
-#   DBUSERNAME                  = var.DBUSERNAME
+# create Azure Kubernetes Service
+module "aks" {
+  source              = "./modules/aks/"
+  NAME                = var.ACR_NAME
+  LOCATION            = "eastus"
+  RESOURCE_GROUP_NAME = azurerm_resource_group.rg["rg2"].name
+  AKS_VNET_ID         = module.vnet.aks_vnet_id
+  ACR_VNET_ID         = module.vnet.acr_vnet_id
+  AGENT_VNET_ID       = module.vnet.agent_vnet_id
+  ACR_ID              = module.acr.acr_id
+  AKS_SUBNET_ID       = module.vnet.aks_subnet_id
+  APPGATEWAY_ID       = module.appgate.appgw_id
+  APPGW_SUBNET_ID     = module.vnet.appgw_subnet_id
+  DNS_PREFIX          = var.DNS_PREFIX
+  rg_id               = azurerm_resource_group.rg["rg2"].id
+  ssh_public_key      = var.ssh_public_key
 
-#   depends_on = [
-#     module.vnet, azurerm_resource_group.rg
-#   ]
+  depends_on = [
+     module.acr, module.vnet, module.appgate, azurerm_resource_group.rg
+  ]
 
-# }
-
-# module "appgate" {
-#   source               = "./modules/appgate"
-#   LOCATION             = "eastus"
-#   RESOURCE_GROUP_NAME  = azurerm_resource_group.rg["rg2"].name
-#   APP_GATEWAY_NAME     = var.APP_GATEWAY_NAME
-#   VIRTUAL_NETWORK_NAME = var.VIRTUAL_NETWORK_NAME
-#   APPGW_PUBLIC_IP_NAME = var.APPGW_PUBLIC_IP_NAME
-#   APPGW_SUBNET_ID      = module.vnet.appgw_subnet_id
-#   depends_on           = [module.vnet, azurerm_resource_group.rg]
-
-
-# }
-
-# module "log-analytics" {
-#   source              = "./modules/loga"
-#   LOCATION            = "eastus"
-#   RESOURCE_GROUP_NAME = azurerm_resource_group.rg["rg2"].name
-
-#   depends_on = [azurerm_resource_group.rg]
-# }
-
-# module "azure-fron-door" {
-#   source                 = "./modules/afd"
-#   RESOURCE_GROUP_NAME    = azurerm_resource_group.rg["rg2"].name
-#   APPGWPUBLIC_IP_ADDRESS = module.appgate.ip_address
-
-#   depends_on = [
-#     module.appgate, azurerm_resource_group.rg
-#   ]
-# }
-# # module "aks"{
-# #   source = "./modules/aks"
-# # }
-
-# # resource "local_file" "kubeconfig" {
-# #   depends_on   = [module.aks]
-# #   filename     = "./kubeconfig"
-# #   content      = module.aks.config
-
-# # }
-
-# # create Azure Kubernetes Service
-# module "aks" {
-#   source              = "./modules/aks/"
-#   NAME                = var.ACR_NAME
-#   LOCATION            = "eastus"
-#   RESOURCE_GROUP_NAME = azurerm_resource_group.rg["rg2"].name
-#   AKS_VNET_ID         = module.vnet.aks_vnet_id
-#   ACR_VNET_ID         = module.vnet.acr_vnet_id
-#   AGENT_VNET_ID       = module.vnet.agent_vnet_id
-#   ACR_ID              = module.acr.acr_id
-#   AKS_SUBNET_ID       = module.vnet.aks_subnet_id
-#   APPGATEWAY_ID       = module.appgate.appgw_id
-#   APPGW_SUBNET_ID     = module.vnet.appgw_subnet_id
-#   DNS_PREFIX          = var.DNS_PREFIX
-#   rg_id               = azurerm_resource_group.rg["rg2"].id
-#   ssh_public_key      = var.ssh_public_key
-
-#   depends_on = [
-#      module.acr, module.vnet, module.appgate, azurerm_resource_group.rg
-#   ]
-
-# }
+}
 
 
 
