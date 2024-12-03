@@ -47,171 +47,171 @@ resource "azurerm_storage_container" "blob_container" {
 }
 
 
-# module "ServicePrincipal" {
-#   source                 = "./modules/sp"
-#   service_principal_name = var.service_principal_name
-#   depends_on = [
-#     azurerm_resource_group.rg
-#   ]
+module "ServicePrincipal" {
+  source                 = "./modules/sp"
+  service_principal_name = var.service_principal_name
+  depends_on = [
+    azurerm_resource_group.rg
+  ]
 
 
-# }
+}
 
 
-# locals  {
-#   roles = {
-#     contributor = "Contributor"
-#     key_vault = "Key Vault Administrator"
+locals  {
+  roles = {
+    contributor = "Owner"
+    key_vault = "Key Vault Administrator"
 
-#   }
-# }
+  }
+}
 
-# resource "azurerm_role_assignment" "rolespn" {
+resource "azurerm_role_assignment" "rolespn" {
 
-# for_each = local.roles
-#   scope                = data.azurerm_subscription.primary.id
-#   role_definition_name = each.value
-#   principal_id         = module.ServicePrincipal.service_principal_object_id
-#   #data.azurerm_client_config.current.object_id if you want to give permission to yourself but
-#   # i have already given
-#   depends_on = [module.ServicePrincipal]
+for_each = local.roles
+  scope                = data.azurerm_subscription.primary.id
+  role_definition_name = each.value
+  principal_id         = module.ServicePrincipal.service_principal_object_id
+  #data.azurerm_client_config.current.object_id if you want to give permission to yourself but
+  # i have already given
+  depends_on = [module.ServicePrincipal]
 
-#     lifecycle {
-#     ignore_changes = all
-#   }
-# }
+    lifecycle {
+    ignore_changes = all
+  }
+}
 
-# resource "azurerm_role_assignment" "new_rolespn" {
+resource "azurerm_role_assignment" "new_rolespn" {
 
-# for_each = local.roles
-#   scope                = data.azurerm_subscription.primary.id
-#   role_definition_name = each.value
-#   principal_id         = data.azuread_service_principal.existing-sp.object_id
-#   #data.azurerm_client_config.current.object_id if you want to give permission to yourself but
-#   # i have already given
-#   depends_on = [module.ServicePrincipal]
+for_each = local.roles
+  scope                = data.azurerm_subscription.primary.id
+  role_definition_name = each.value
+  principal_id         = data.azuread_service_principal.existing-sp.object_id
+  #data.azurerm_client_config.current.object_id if you want to give permission to yourself but
+  # i have already given
+  depends_on = [module.ServicePrincipal]
 
-#     lifecycle {
-#     ignore_changes = all
-#   }
-# }
+    lifecycle {
+    ignore_changes = all
+  }
+}
 
 
 
-# module "keyvault" {
-#   source              = "./modules/kv"
-#   keyvault_name       = var.keyvault_name
-#   resource_group_name = azurerm_resource_group.rg["rg2"].name
-#   location            = azurerm_resource_group.rg["rg2"].location
+module "keyvault" {
+  source              = "./modules/kv"
+  keyvault_name       = var.keyvault_name
+  resource_group_name = azurerm_resource_group.rg["rg2"].name
+  location            = azurerm_resource_group.rg["rg2"].location
 
-#   depends_on = [
-#     module.ServicePrincipal, azurerm_resource_group.rg
-#   ]
-# }
+  depends_on = [
+    module.ServicePrincipal, azurerm_resource_group.rg
+  ]
+}
 
-# # storing service connection to key vault
+# storing service connection to key vault
 
-# locals {
-#   secrets = {
-#     spn-sc       = module.ServicePrincipal.service_principal_password_value
-#     github-token = var.github_token
-#     ssh-pub-key  = var.ssh_public_key
-#     ado-token    = var.ado_token
-#   }
-# }
+locals {
+  secrets = {
+    spn-sc       = module.ServicePrincipal.service_principal_password_value
+    github-token = var.github_token
+    ssh-pub-key  = var.ssh_public_key
+    ado-token    = var.ado_token
+  }
+}
 
-# # resource "azurerm_key_vault_secret" "example" {
-# #   for_each     = local.secrets
-# #   name         = each.key
-# #   value        = each.value
-# #   key_vault_id = module.keyvault.keyvault_id
-
-# #   depends_on = [
-# #     module.keyvault, azurerm_key_vault_access_policy.kv_access_policy_me, azurerm_key_vault_access_policy.kv_access_policy_sc, azurerm_key_vault_access_policy.kv_access_policy_user
-# #   ]
-# # }
-
-# # give permission to sp to access keyvault
-
-# # this permission is for service connection from app registration, this is given to store database secrets to key vault
-# resource "azurerm_key_vault_access_policy" "kv_access_policy_sc" {
-
+# resource "azurerm_key_vault_secret" "example" {
+#   for_each     = local.secrets
+#   name         = each.key
+#   value        = each.value
 #   key_vault_id = module.keyvault.keyvault_id
-#   tenant_id    = data.azurerm_client_config.current.tenant_id
-#   object_id    = module.ServicePrincipal.service_principal_object_id
-#   key_permissions = [
-#     "Get", "List"
-#   ]
-#   secret_permissions = [
-#     "Get", "Backup", "Delete", "List", "Purge", "Recover", "Restore", "Set"
-#   ]
-
-#   depends_on = [module.keyvault]
-# }
-
-# # to the current user
-# resource "azurerm_key_vault_access_policy" "kv_access_policy_user" {
-
-#   key_vault_id = data.azurerm_key_vault.created_kv.id
-#   tenant_id    = data.azurerm_client_config.current.tenant_id
-#   object_id    = data.azuread_user.user_details.object_id
-#   secret_permissions = [
-#     "Get",
-#     "List",
-#     "Recover",
-#   ]
-
-#   key_permissions = [
-#     "Get", "Backup", "Delete", "Purge", "Recover", "Restore",
-#   ]
-
-#   certificate_permissions = [
-#     "Get", "Backup", "Import", "List", "Purge", "Recover", "Restore"
-#   ]
-
-#   depends_on = [module.keyvault]
-# }
-
-# # permission to my self
-# resource "azurerm_key_vault_access_policy" "kv_access_policy_me" {
-#   key_vault_id       = data.azurerm_key_vault.created_kv.id
-#   tenant_id          = data.azurerm_client_config.current.tenant_id
-#   object_id          = data.azurerm_client_config.current.object_id
-#   key_permissions    = ["Get", "List"]
-#   secret_permissions = ["Get", "Backup", "Delete", "List", "Purge", "Recover", "Restore", "Set"]
-
-#   depends_on = [module.keyvault]
-# }
-
-# provider "azuredevops" {
-#   org_service_url       = var.ado_org_service_url
-#   # personal_access_token = var.ado_token
-# }
-
-# module "devops" {
-#   source                   = "./modules/ado"
-#   project_name             = var.project_name
-#   ado_github_id            = var.ado_github_id
-#   ado_pipeline_yaml_path_1 = var.ado_pipeline_yaml_path_1
-#   github_pat               = var.github_token
-#   service_principal_id     = module.ServicePrincipal.service_principal_application_id
-#   service_principal_secret = module.ServicePrincipal.service_principal_password_value
-#   spn_tenant_id            = data.azurerm_client_config.current.tenant_id
-#   subscription_name        = data.azurerm_subscription.primary.display_name
-
-#   spn_subscription_id = data.azurerm_client_config.current.subscription_id
-
-
-
-
-#   providers = {
-#     azuredevops = azuredevops
-#   }
 
 #   depends_on = [
-#     module.keyvault, module.ServicePrincipal
+#     module.keyvault, azurerm_key_vault_access_policy.kv_access_policy_me, azurerm_key_vault_access_policy.kv_access_policy_sc, azurerm_key_vault_access_policy.kv_access_policy_user
 #   ]
 # }
+
+# give permission to sp to access keyvault
+
+# this permission is for service connection from app registration, this is given to store database secrets to key vault
+resource "azurerm_key_vault_access_policy" "kv_access_policy_sc" {
+
+  key_vault_id = module.keyvault.keyvault_id
+  tenant_id    = data.azurerm_client_config.current.tenant_id
+  object_id    = module.ServicePrincipal.service_principal_object_id
+  key_permissions = [
+    "Get", "List"
+  ]
+  secret_permissions = [
+    "Get", "Backup", "Delete", "List", "Purge", "Recover", "Restore", "Set"
+  ]
+
+  depends_on = [module.keyvault]
+}
+
+# to the current user
+resource "azurerm_key_vault_access_policy" "kv_access_policy_user" {
+
+  key_vault_id = data.azurerm_key_vault.created_kv.id
+  tenant_id    = data.azurerm_client_config.current.tenant_id
+  object_id    = data.azuread_user.user_details.object_id
+  secret_permissions = [
+    "Get",
+    "List",
+    "Recover",
+  ]
+
+  key_permissions = [
+    "Get", "Backup", "Delete", "Purge", "Recover", "Restore",
+  ]
+
+  certificate_permissions = [
+    "Get", "Backup", "Import", "List", "Purge", "Recover", "Restore"
+  ]
+
+  depends_on = [module.keyvault]
+}
+
+# permission to my self
+resource "azurerm_key_vault_access_policy" "kv_access_policy_me" {
+  key_vault_id       = data.azurerm_key_vault.created_kv.id
+  tenant_id          = data.azurerm_client_config.current.tenant_id
+  object_id          = data.azurerm_client_config.current.object_id
+  key_permissions    = ["Get", "List"]
+  secret_permissions = ["Get", "Backup", "Delete", "List", "Purge", "Recover", "Restore", "Set"]
+
+  depends_on = [module.keyvault]
+}
+
+provider "azuredevops" {
+  org_service_url       = var.ado_org_service_url
+  # personal_access_token = var.ado_token
+}
+
+module "devops" {
+  source                   = "./modules/ado"
+  project_name             = var.project_name
+  ado_github_id            = var.ado_github_id
+  ado_pipeline_yaml_path_1 = var.ado_pipeline_yaml_path_1
+  github_pat               = var.github_token
+  service_principal_id     = module.ServicePrincipal.service_principal_application_id
+  service_principal_secret = module.ServicePrincipal.service_principal_password_value
+  spn_tenant_id            = data.azurerm_client_config.current.tenant_id
+  subscription_name        = data.azurerm_subscription.primary.display_name
+
+  spn_subscription_id = data.azurerm_client_config.current.subscription_id
+
+
+
+
+  providers = {
+    azuredevops = azuredevops
+  }
+
+  depends_on = [
+    module.keyvault, module.ServicePrincipal
+  ]
+}
 
 
 module "vnet" {
@@ -245,6 +245,7 @@ module "agent-vm" {
   ADMIN_PASSWORD      = var.ADMIN_PASSWORD
   VM_SIZE             = var.VM_SIZE
   AGENT_SUBNET_ID     = module.vnet.agent_vnet_subnet_id
+  ado_token = var.ado_token
 
   depends_on = [
     module.vnet, azurerm_resource_group.rg

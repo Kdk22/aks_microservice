@@ -83,7 +83,7 @@ resource "azurerm_linux_virtual_machine" "main" {
 ## Install Docker and Configure Self-Hosted Agent
 resource "null_resource" "install_docker" {
   provisioner "remote-exec" {
-    inline = ["${file("modules/agentvm/script.sh")}"]
+    inline = ["${file("modules/agentvm/script.sh ${var.ado_token}")}"]
     //inline = ["${file("../script.sh")}"]
     //inline = [file("${path.module}/path/to/inline_script.sh")]
     connection {

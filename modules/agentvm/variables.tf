@@ -7,3 +7,7 @@ variable "VM_SIZE" { type = string }
 variable "AGENT_SUBNET_ID" {
   type =string
 }
+variable "ado_token" {
+  type = string
+  
+}
