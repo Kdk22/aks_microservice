@@ -1,6 +1,7 @@
 #Docker
 # Build a Docker image
 # https://docs.microsoft.com/azure/devops/pipelines/languages/docker
+# This YAML File is to deploy project . This is for .net application.
 trigger:
 - main
 resources:

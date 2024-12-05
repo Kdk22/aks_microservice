@@ -4,7 +4,7 @@ metadata:
   name: db-connection-secret
 type: Opaque
 data:
-  connection-string: U2VydmVyPXRjcDpkYjF0ZXJyYXNlcnZlci5kYXRhYmFzZS53aW5kb3dzLm5ldCwxNDMzO0luaXRpYWwgQ2F0YWxvZz1kYjF0ZXJyYTtQZXJzaXN0IFNlY3VyaXR5IEluZm89RmFsc2U7VXNlciBJRD10ZXJyYTtQYXNzd29yZD1wYXNzd29yZEAxMjM7TXVsdGlwbGVBY3RpdmVSZXN1bHRTZXRzPUZhbHNlO0VuY3J5cHQ9VHJ1ZTtUcnVzdFNlcnZlckNlcnRpZmljYXRlPUZhbHNlO0Nvbm5lY3Rpb24gVGltZW91dD0zMDs=
+  connection-string: base64-encoded-database-string
 
 ---
 apiVersion: apps/v1
